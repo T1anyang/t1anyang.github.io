@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"t1anyang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="MIT 6.S081 lab pgtbl 思路及解决方案">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT-6-S081-lab-pgtbl">
+<meta property="og:url" content="https://t1anyang.github.io/2022/10/19/MIT-6-S081-lab-pgtbl/index.html">
+<meta property="og:site_name" content="Tianyang&#39;s blog">
+<meta property="og:description" content="MIT 6.S081 lab pgtbl 思路及解决方案">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-10-19T03:18:20.000Z">
+<meta property="article:modified_time" content="2022-12-15T04:50:34.859Z">
+<meta property="article:author" content="tianyang">
+<meta property="article:tag" content="OS">
+<meta property="article:tag" content="MIT 6.S081">
+<meta property="article:tag" content="labs">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://t1anyang.github.io/2022/10/19/MIT-6-S081-lab-pgtbl/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MIT-6-S081-lab-pgtbl | Tianyang's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Tianyang's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://t1anyang.github.io/2022/10/19/MIT-6-S081-lab-pgtbl/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="tianyang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Tianyang's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MIT-6-S081-lab-pgtbl
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-10-19 11:18:20" itemprop="dateCreated datePublished" datetime="2022-10-19T11:18:20+08:00">2022-10-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-12-15 12:50:34" itemprop="dateModified" datetime="2022-12-15T12:50:34+08:00">2022-12-15</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>MIT 6.S081 lab pgtbl 思路及解决方案</p>
+<span id="more"></span>
+<p>该课程的<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.828/2020/labs/pgtbl.html">第三个实验</a>，要求实现对xv6的页表进行修改。</p>
+<p>您可以在<a target="_blank" rel="noopener" href="https://github.com/T1anyang/MIT-6.S081-2020-labs-solution">我的github仓库</a>中找到我的完整解决方案。</p>
+<h1 id="print-a-page-table">Print a page table</h1>
+<blockquote>
+<p>Define a function called <code>vmprint()</code>. It should take a <code>pagetable_t</code> argument, and print that pagetable in the format described below. Insert <code>if(p-&gt;pid==1) vmprint(p-&gt;pagetable)</code> in exec.c just before the <code>return argc</code>, to print the first process's page table. You receive full credit for this assignment if you pass the <code>pte printout</code> test of <code>make grade</code>.</p>
+</blockquote>
+<p>要求我们实现页表的打印功能。由于页表的数据结构，我们可以递归地打印页表中的子页表。由于<code>xv6</code>系统采用了三级页表功能，我们在递归层数到达三层时停止。</p>
+<p>在后续的实验中，笔者发现打印过大的页表会输出过多内容，占用大量时间且输出巨量无用信息。因此我们将该函数设计为可以指定递归深度。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/vm.c</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">vmprint</span><span class="params">(<span class="type">pagetable_t</span> pagetable, <span class="type">int</span> depth, <span class="type">int</span> maxdepth)</span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(depth &lt; <span class="number">0</span>)&#123;</span><br><span class="line">    panic(<span class="string">&quot;vmprint&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span>(depth == <span class="number">0</span>)&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;page table %p\n&quot;</span>, pagetable);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span>(depth &gt;= maxdepth)&#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">512</span>; i++)&#123;</span><br><span class="line">    <span class="type">pte_t</span> pte = pagetable[i];</span><br><span class="line">    <span class="keyword">if</span>(pte &amp; PTE_V)&#123;</span><br><span class="line">      <span class="type">pagetable_t</span> pa = (<span class="type">pagetable_t</span>) PTE2PA(pte);</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;..&quot;</span>);</span><br><span class="line">      <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; depth; j++)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot; ..&quot;</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;%d: pte %p pa %p\n&quot;</span>, i, pte, pa);</span><br><span class="line">      vmprint(pa, depth+<span class="number">1</span>, maxdepth);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>并按要求在<code>kernel/exec.c/exec()</code>中打印process 0的页表。 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(p-&gt;pid==<span class="number">1</span>) vmprint(p-&gt;pagetable, <span class="number">0</span>, <span class="number">3</span>);</span><br></pre></td></tr></table></figure></p>
+<h1 id="a-kernel-page-table-per-process">A kernel page table per process</h1>
+<blockquote>
+<p>Xv6 has a single kernel page table that's used whenever it executes in the kernel. The kernel page table is a direct mapping to physical addresses, so that kernel virtual address x maps to physical address x. Xv6 also has a separate page table for each process's user address space, containing only mappings for that process's user memory, starting at virtual address zero. Because the kernel page table doesn't contain these mappings, user addresses are not valid in the kernel. Thus, when the kernel needs to use a user pointer passed in a system call (e.g., the buffer pointer passed to <code>write()</code>), the kernel must first translate the pointer to a physical address. The goal of this section and the next is to allow the kernel to directly dereference user pointers.<br>
+Your first job is to modify the kernel so that every process uses its own copy of the kernel page table when executing in the kernel. Modify <code>struct proc</code> to maintain a kernel page table for each process, and modify the scheduler to switch kernel page tables when switching processes. For this step, each per-process kernel page table should be identical to the existing global kernel page table. You pass this part of the lab if <code>usertests</code> runs correctly.</p>
+</blockquote>
+<p>简单解释一下实验要求。Xv6系统中页表分为kernel页表和process页表，分别储存内核态下的内存空间的映射和用户态下内存空间映射。每个进程维护一个process页表，系统维护一个全局的kernel页表。<br>
+kernel页表中并没有每个进程的process页表信息，因此在内核空间和用户空间之间交换数据就引入了额外的开销：例如，从内核空间向外复制数据到用户态，需要通过<code>walk()</code>函数查进程的process页表，将虚拟的用户态地址翻译为物理地址。而假设kernel页表中包含了该进程process页表中的这些映射关系，就可以让CPU直接用当前的kernel页表进行地址翻译，这显然是比<code>walk()</code>更高效的。</p>
+<p>这一阶段的实验要求我们为每个进程添加一个独立的kernel页表。下一阶段要求我们在kernel页表中添加和process页表相同的pte。</p>
+<p>在本阶段，我们的工作可以概括为以下三点:</p>
+<ol type="1">
+<li>在<code>kernel/proc.h</code>中为<code>struct proc</code>添加一项<code>pagetable_t kpagetable</code></li>
+<li>给出<code>kpagetable</code>的创建与释放方法，并在进程创建和释放时调用他们</li>
+<li>在需要使用进程的<code>kpagetable</code>时，将其加载进<code>satp</code>寄存器</li>
+</ol>
+<h2 id="kpagetable-创建与释放">kpagetable: 创建与释放</h2>
+<p>我们需要给出新建<code>kpagetable</code>的方法。我们可以仿照<code>kernel/vm.c</code>中对全局的内核页表<code>kernel_pagetable</code>的初始化方式：申请一页内存，然后把<code>UART0</code>, <code>VIRTIO0</code>等等都映射上去。我们自然会想到，<code>kernel_pagetable</code>中映射的每一块内存，在进程的<code>kpagetable</code>中都映射一份。</p>
+<p>在创建进程时，我们需要调用新建<code>kpagetable</code>的函数来创建一个进程专属的内核页表。我们还需要把每个进程都会申请的<code>kstack</code>映射到内核页表，而不是像之前的实现一样将其映射进<code>kernel_pagetable</code>。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">pagetable_t</span></span><br><span class="line"><span class="title function_">proc_kpagetable</span><span class="params">(<span class="keyword">struct</span> proc *p)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">pagetable_t</span> pagetable;</span><br><span class="line">  pagetable = kpagetable_create();</span><br><span class="line">  <span class="keyword">if</span>(pagetable == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  <span class="comment">// alloc kernel stack</span></span><br><span class="line">  <span class="type">char</span> *pa = kalloc();</span><br><span class="line">  <span class="keyword">if</span> (pa == <span class="number">0</span>)</span><br><span class="line">    panic(<span class="string">&quot;kalloc&quot;</span>);</span><br><span class="line">  uint64 va = KSTACK(<span class="number">0</span>);</span><br><span class="line">  mappages(pagetable, va, PGSIZE, (uint64)pa, PTE_R | PTE_W);</span><br><span class="line">  p-&gt;kstack = va;</span><br><span class="line">  <span class="keyword">return</span> pagetable;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在释放<code>kpagetable</code>时，我们的内核页表中有两种映射:</p>
+<ol type="1">
+<li><code>UART0</code>, <code>VIRTIO0</code>等的映射；</li>
+<li>进程的<code>kstack</code>的映射。</li>
+</ol>
+<p>我们需要将整个页表中的所有映射清空。接触虚拟地址到物理地址的映射时，我们应当选择是否释放掉物理地址。对于<code>UART0</code>, <code>VIRTIO0</code>等物理地址，我们不应将其释放。这些物理地址对于其他进程是有用的，其释放应该由<code>kernel_pagetable</code>的维护者完成。而进程的<code>kstack</code>对应的物理地址是进程独享的，因此应当由进程的维护者，也就是我们来释放。</p>
+<p>在释放进程时，我们需要调用释放<code>kpagetable</code>的函数，将内存交还。</p>
+<h2 id="kpagetable-使用">kpagetable: 使用</h2>
+<p>在实现了<code>kpagetable</code>的创建与释放后，我们需要在合适的位置使用它。</p>
+<p>首先是<code>scheduler()</code>，每个CPU都运行着一个<code>scheduler()</code>, 不断地运行进程。在其切换到新进程前，我们需要将该进程的<code>kpagetable</code>加载到<code>satp</code>寄存器中；进程执行完毕后，我们需要换回<code>kernel_pagetable</code>.</p>
+<p>在<code>kernel/vm.c</code>中有一个<code>kvmpa()</code>函数，用来将内核的虚拟地址翻译为物理地址。我们也需要修改他的实现，将其修改为使用当前进程的<code>kpagetable</code>来完成地址翻译。</p>
+<p>完成了这些工作后，我们本阶段的实验就告一段落了。</p>
+<h1 id="simplify-copyincopyinstr">Simplify <code>copyin/copyinstr</code></h1>
+<blockquote>
+<p>The kernel's <code>copyin</code> function reads memory pointed to by user pointers. It does this by translating them to physical addresses, which the kernel can directly dereference. It performs this translation by walking the process page-table in software. Your job in this part of the lab is to add user mappings to each process's kernel page table (created in the previous section) that allow <code>copyin</code> (and the related string function <code>copyinstr</code>) to directly dereference user pointers.<br>
+Replace the body of <code>copyin</code> in <code>kernel/vm.c</code> with a call to <code>copyin_new</code> (defined in <code>kernel/vmcopyin.c</code>); do the same for <code>copyinstr</code> and <code>copyinstr_new</code>. Add mappings for user addresses to each process's kernel page table so that <code>copyin_new</code> and <code>copyinstr_new</code> work. You pass this assignment if usertests runs correctly and all the make grade tests pass.</p>
+</blockquote>
+<p>上一阶段的实验并没有解决在内核态访问用户内存空间中数据时，使用<code>walk()</code>函数进行地址翻译而带来的额外开销问题，因为进程的内核页表并不能翻译用户虚拟地址。为了解决这一问题，我们需要在内核页表中保存一份和用户页表相同的映射，并设置好对应<code>PTE</code>的权限。一个显而易见的想法是，每次我们在用户页表中新加映射时，我们在内核页表加上相同的映射; 我们删去用户页表中的映射时，我们同样在内核页表删去该映射。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">vmcppagetable</span><span class="params">(<span class="type">pagetable_t</span> upagetable, <span class="type">pagetable_t</span> kpagetable, uint64 oldsz, uint64 sz)</span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(oldsz &lt; sz)&#123;</span><br><span class="line">    <span class="keyword">for</span>(uint64 va = PGROUNDUP(oldsz); va &lt; sz; va += PGSIZE)&#123;</span><br><span class="line">      <span class="keyword">if</span>(va &gt;= PLIC)&#123;</span><br><span class="line">        panic(<span class="string">&quot;vmcppagetable: memory exhausted.&quot;</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="type">pte_t</span> *upte = walk(upagetable, va, <span class="number">0</span>);</span><br><span class="line">      <span class="type">pte_t</span> *kpte = walk(kpagetable, va, <span class="number">1</span>);</span><br><span class="line">      *kpte = *upte;</span><br><span class="line">      *kpte &amp;= ~PTE_U;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span>(oldsz &gt; sz)&#123;</span><br><span class="line">    <span class="keyword">if</span>(PGROUNDUP(sz) &lt; PGROUNDUP(oldsz))&#123;</span><br><span class="line">      <span class="type">int</span> npages = (PGROUNDUP(oldsz) - PGROUNDUP(sz)) / PGSIZE;</span><br><span class="line">      uvmunmap(kpagetable, PGROUNDUP(sz), npages, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在，我们需要在每一处更新了进程的用户页表处同步更新进程的内核页表。</p>
+<ul>
+<li><code>growproc()</code>函数申请或释放内存，修改用户页表；我们需要同步更新内核页表:</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Grow or shrink user memory by n bytes.</span></span><br><span class="line"><span class="comment">// Return 0 on success, -1 on failure.</span></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">growproc</span><span class="params">(<span class="type">int</span> n)</span></span><br><span class="line">&#123;</span><br><span class="line">  uint sz;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line"></span><br><span class="line">  sz = p-&gt;sz;</span><br><span class="line">  <span class="keyword">if</span>(n &gt; <span class="number">0</span>)&#123;</span><br><span class="line">    <span class="keyword">if</span>((sz = uvmalloc(p-&gt;pagetable, sz, sz + n)) == <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span>(n &lt; <span class="number">0</span>)&#123;</span><br><span class="line">    sz = uvmdealloc(p-&gt;pagetable, sz, sz + n);</span><br><span class="line">  &#125;</span><br><span class="line">  vmcppagetable(p-&gt;pagetable, p-&gt;kpagetable, p-&gt;sz, sz);</span><br><span class="line">  p-&gt;sz = sz;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>fork()</code>函数中，我们需要将父进程的内核页表复制一份给子进程</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> </span><br><span class="line"><span class="title function_">fork</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// codes...</span></span><br><span class="line">  <span class="comment">// Copy user memory from parent to child.</span></span><br><span class="line">  <span class="keyword">if</span>(uvmcopy(p-&gt;pagetable, np-&gt;pagetable, p-&gt;sz) &lt; <span class="number">0</span>)&#123;</span><br><span class="line">    freeproc(np);</span><br><span class="line">    release(&amp;np-&gt;lock);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  np-&gt;sz = p-&gt;sz;</span><br><span class="line">  np-&gt;parent = p;</span><br><span class="line"></span><br><span class="line">  vmcppagetable(np-&gt;pagetable, np-&gt;kpagetable, <span class="number">0</span>, np-&gt;sz);</span><br><span class="line">  <span class="comment">// codes...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>exec()</code>函数中，我们把旧的内核页表中，用户地址翻译项全部清空</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">exec</span><span class="params">(<span class="type">char</span> *path, <span class="type">char</span> **argv)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// codes...</span></span><br><span class="line">  uvmunmap(p-&gt;kpagetable, <span class="number">0</span>, PGROUNDUP(oldsz)/PGSIZE, <span class="number">0</span>);</span><br><span class="line">  vmcppagetable(p-&gt;pagetable, p-&gt;kpagetable, <span class="number">0</span>, p-&gt;sz);</span><br><span class="line">  <span class="keyword">if</span>(p-&gt;pid==<span class="number">1</span>) vmprint(p-&gt;pagetable, <span class="number">0</span>, <span class="number">3</span>);</span><br><span class="line">  <span class="keyword">return</span> argc; <span class="comment">// this ends up in a0, the first argument to main(argc, argv)</span></span><br><span class="line">  <span class="comment">// codes...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>userinit()</code>中，我们同步第一个用户进程的内核页表与用户页表</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Set up first user process.</span></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">userinit</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// codes...</span></span><br><span class="line">  <span class="comment">// allocate one user page and copy init&#x27;s instructions</span></span><br><span class="line">  <span class="comment">// and data into it</span></span><br><span class="line">  uvminit(p-&gt;pagetable, initcode, <span class="keyword">sizeof</span>(initcode));</span><br><span class="line">  <span class="comment">// do the same map in kernel pagetable</span></span><br><span class="line">  p-&gt;sz = PGSIZE;</span><br><span class="line">  vmcppagetable(p-&gt;pagetable, p-&gt;kpagetable, <span class="number">0</span>, p-&gt;sz);</span><br><span class="line">  <span class="comment">// codes...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在释放内核页表时，我们需要清空这些用户地址的<code>PTE</code>. 我们将他们解映射，不要释放掉物理内存。释放物理内存应在用户页表的释放中完成。</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// unmap kernel memory pages,</span></span><br><span class="line"><span class="comment">// then free page-table pages.</span></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">kvmfree</span><span class="params">(<span class="type">pagetable_t</span> pagetable, uint64 sz)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">if</span>(sz &gt; <span class="number">0</span>)</span><br><span class="line">    uvmunmap(pagetable, <span class="number">0</span>, PGROUNDUP(sz)/PGSIZE, <span class="number">0</span>);</span><br><span class="line">  freewalk(pagetable);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>最后，我们将<code>copyin</code>, <code>copyinstr</code>的实现替换为<code>copyin_new</code>和<code>copyinstr_new</code>即可。</li>
+</ul>
+<p>执行<code>make qemu</code>, 在qemu-riscV中启动我们的操作系统，执行<code>usertests</code>得到了预期输出。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br></pre></td><td class="code"><pre><span class="line">$ usertests</span><br><span class="line">usertests starting</span><br><span class="line">test execout: OK</span><br><span class="line">test copyin: OK</span><br><span class="line">test copyout: OK</span><br><span class="line">test copyinstr1: OK</span><br><span class="line">test copyinstr2: OK</span><br><span class="line">test copyinstr3: OK</span><br><span class="line">test truncate1: OK</span><br><span class="line">test truncate2: OK</span><br><span class="line">test truncate3: OK</span><br><span class="line">test reparent2: OK</span><br><span class="line">test pgbug: OK</span><br><span class="line">test sbrkbugs: usertrap(): unexpected scause 0x000000000000000c pid=3235</span><br><span class="line">            sepc=0x00000000000053fc stval=0x00000000000053fc</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000c pid=3236</span><br><span class="line">            sepc=0x00000000000053fc stval=0x00000000000053fc</span><br><span class="line">OK</span><br><span class="line">test badarg: OK</span><br><span class="line">test reparent: OK</span><br><span class="line">test twochildren: OK</span><br><span class="line">test forkfork: OK</span><br><span class="line">test forkforkfork: OK</span><br><span class="line">test argptest: OK</span><br><span class="line">test createdelete: OK</span><br><span class="line">test linkunlink: OK</span><br><span class="line">test linktest: OK</span><br><span class="line">test unlinkread: OK</span><br><span class="line">test concreate: OK</span><br><span class="line">test subdir: OK</span><br><span class="line">test fourfiles: OK</span><br><span class="line">test sharedfd: OK</span><br><span class="line">test exectest: OK</span><br><span class="line">test bigargtest: OK</span><br><span class="line">test bigwrite: OK</span><br><span class="line">test bsstest: OK</span><br><span class="line">test sbrkbasic: OK</span><br><span class="line">test sbrkmuch: OK</span><br><span class="line">test kernmem: usertrap(): unexpected scause 0x000000000000000d pid=6215</span><br><span class="line">            sepc=0x000000000000201a stval=0x0000000080000000</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6216</span><br><span class="line">            sepc=0x000000000000201a stval=0x000000008000c350</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6217</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000800186a0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6218</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000800249f0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6219</span><br><span class="line">            sepc=0x000000000000201a stval=0x0000000080030d40</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6220</span><br><span class="line">            sepc=0x000000000000201a stval=0x000000008003d090</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6221</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000800493e0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6222</span><br><span class="line">            sepc=0x000000000000201a stval=0x0000000080055730</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6223</span><br><span class="line">            sepc=0x000000000000201a stval=0x0000000080061a80</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6224</span><br><span class="line">            sepc=0x000000000000201a stval=0x000000008006ddd0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6225</span><br><span class="line">            sepc=0x000000000000201a stval=0x000000008007a120</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6226</span><br><span class="line">            sepc=0x000000000000201a stval=0x0000000080086470</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6227</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000800927c0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6228</span><br><span class="line">            sepc=0x000000000000201a stval=0x000000008009eb10</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6229</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000800aae60</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6230</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000800b71b0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6231</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000800c3500</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6232</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000800cf850</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6233</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000800dbba0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6234</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000800e7ef0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6235</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000800f4240</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6236</span><br><span class="line">            sepc=0x000000000000201a stval=0x0000000080100590</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6237</span><br><span class="line">            sepc=0x000000000000201a stval=0x000000008010c8e0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6238</span><br><span class="line">            sepc=0x000000000000201a stval=0x0000000080118c30</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6239</span><br><span class="line">            sepc=0x000000000000201a stval=0x0000000080124f80</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6240</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000801312d0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6241</span><br><span class="line">            sepc=0x000000000000201a stval=0x000000008013d620</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6242</span><br><span class="line">            sepc=0x000000000000201a stval=0x0000000080149970</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6243</span><br><span class="line">            sepc=0x000000000000201a stval=0x0000000080155cc0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6244</span><br><span class="line">            sepc=0x000000000000201a stval=0x0000000080162010</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6245</span><br><span class="line">            sepc=0x000000000000201a stval=0x000000008016e360</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6246</span><br><span class="line">            sepc=0x000000000000201a stval=0x000000008017a6b0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6247</span><br><span class="line">            sepc=0x000000000000201a stval=0x0000000080186a00</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6248</span><br><span class="line">            sepc=0x000000000000201a stval=0x0000000080192d50</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6249</span><br><span class="line">            sepc=0x000000000000201a stval=0x000000008019f0a0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6250</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000801ab3f0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6251</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000801b7740</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6252</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000801c3a90</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6253</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000801cfde0</span><br><span class="line">usertrap(): unexpected scause 0x000000000000000d pid=6254</span><br><span class="line">            sepc=0x000000000000201a stval=0x00000000801dc130</span><br><span class="line">OK</span><br><span class="line">test sbrkfail: usertrap(): unexpected scause 0x000000000000000d pid=6266</span><br><span class="line">            sepc=0x0000000000003e76 stval=0x0000000000012000</span><br><span class="line">OK</span><br><span class="line">test sbrkarg: OK</span><br><span class="line">test validatetest: OK</span><br><span class="line">test stacktest: usertrap(): unexpected scause 0x000000000000000d pid=6270</span><br><span class="line">            sepc=0x0000000000002188 stval=0x000000000000fbc0</span><br><span class="line">OK</span><br><span class="line">test opentest: OK</span><br><span class="line">test writetest: OK</span><br><span class="line">test writebig: OK</span><br><span class="line">test createtest: OK</span><br><span class="line">test openiput: OK</span><br><span class="line">test exitiput: OK</span><br><span class="line">test iput: OK</span><br><span class="line">test mem: OK</span><br><span class="line">test pipe1: OK</span><br><span class="line">test preempt: kill... wait... OK</span><br><span class="line">test exitwait: OK</span><br><span class="line">test rmdot: OK</span><br><span class="line">test fourteen: OK</span><br><span class="line">test bigfile: OK</span><br><span class="line">test dirfile: OK</span><br><span class="line">test iref: OK</span><br><span class="line">test forktest: OK</span><br><span class="line">test bigdir: OK</span><br><span class="line">ALL TESTS PASSED</span><br></pre></td></tr></table></figure>
+<p>值得一提的是，MIT的实验中指明了内核页表中映射的虚拟地址不能超过PLIC。但PLIC并不是<code>kernel/memlayout.h</code>中所定义的最低的物理地址。CLINT处于比PLIC更低的物理地址。这似乎表明，CLINT对于进程的内核页表不是必需的，在实现中为了给申请的虚拟地址腾出空间，我们也只能放弃在进程内核页表中对CLINT进行映射。这一做法也似乎不会带来影响。如果有人能知道CLINT为什么不是必须的，还望不吝赐教。</p>
+<h1 id="致谢">致谢</h1>
+<p>不得不说，pgtbl实验是有一些难度的。本人在完成该实验的过程中参考了以下博客:</p>
+<p>[1] Mit6.S081-实验3-Page tables, 解析Ta CSDN用户;<br>
+https://blog.csdn.net/u013577996/article/details/109582932</p>
+<p>[2] Lab : Page Table, FlyingPig;<br>
+https://github.com/PKUFlyingPig/MIT6.S081-2020fall/blob/master/reports/pgtbl.md</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/OS/" rel="tag"># OS</a>
+              <a href="/tags/MIT-6-S081/" rel="tag"># MIT 6.S081</a>
+              <a href="/tags/labs/" rel="tag"># labs</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/" rel="prev" title="软件保护技术简谈">
+      <i class="fa fa-chevron-left"></i> 软件保护技术简谈
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#print-a-page-table"><span class="nav-number">1.</span> <span class="nav-text">Print a page table</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#a-kernel-page-table-per-process"><span class="nav-number">2.</span> <span class="nav-text">A kernel page table per process</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#kpagetable-%E5%88%9B%E5%BB%BA%E4%B8%8E%E9%87%8A%E6%94%BE"><span class="nav-number">2.1.</span> <span class="nav-text">kpagetable: 创建与释放</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kpagetable-%E4%BD%BF%E7%94%A8"><span class="nav-number">2.2.</span> <span class="nav-text">kpagetable: 使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#simplify-copyincopyinstr"><span class="nav-number">3.</span> <span class="nav-text">Simplify copyin&#x2F;copyinstr</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">4.</span> <span class="nav-text">致谢</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">tianyang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tianyang</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

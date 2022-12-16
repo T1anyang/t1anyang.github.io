@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"t1anyang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="MIT 6.S081 lab util 思路及解决方案">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT 6.S081 lab util">
+<meta property="og:url" content="https://t1anyang.github.io/2022/09/26/MIT-6-S081-lab-util/index.html">
+<meta property="og:site_name" content="Tianyang&#39;s blog">
+<meta property="og:description" content="MIT 6.S081 lab util 思路及解决方案">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://swtch.com/~rsc/thread/sieve.gif">
+<meta property="article:published_time" content="2022-09-26T03:16:18.000Z">
+<meta property="article:modified_time" content="2022-12-15T04:50:34.859Z">
+<meta property="article:author" content="tianyang">
+<meta property="article:tag" content="OS">
+<meta property="article:tag" content="MIT 6.S081">
+<meta property="article:tag" content="labs">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://swtch.com/~rsc/thread/sieve.gif">
+
+<link rel="canonical" href="https://t1anyang.github.io/2022/09/26/MIT-6-S081-lab-util/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MIT 6.S081 lab util | Tianyang's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Tianyang's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://t1anyang.github.io/2022/09/26/MIT-6-S081-lab-util/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="tianyang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Tianyang's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MIT 6.S081 lab util
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-09-26 11:16:18" itemprop="dateCreated datePublished" datetime="2022-09-26T11:16:18+08:00">2022-09-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-12-15 12:50:34" itemprop="dateModified" datetime="2022-12-15T12:50:34+08:00">2022-12-15</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>MIT 6.S081 lab util 思路及解决方案</p>
+<span id="more"></span>
+<p>该课程的<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.828/2020/labs/util.html">第一个实验</a>，要求通过syscall实现一些小程序。总体来说比较简单。</p>
+<h1 id="sleep">sleep</h1>
+<blockquote>
+<p>Implement the UNIX program sleep for xv6; your sleep should pause for a user-specified number of ticks. A tick is a notion of time defined by the xv6 kernel, namely the time between two interrupts from the timer chip. Your solution should be in the file user/sleep.c.</p>
+</blockquote>
+<p>直接调用<code>sleep</code>就好，记得在<code>Makefile</code>对应位置添加<code>sleep</code> <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// user/sleep.c</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/stat.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">usr_sleep</span><span class="params">(<span class="type">int</span> click)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> sleep(click);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>* argv[])</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(argc == <span class="number">1</span>)&#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;sleep: missing operand\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">        usr_sleep(atoi(argv[<span class="number">1</span>]));</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="pingpong">pingpong</h1>
+<blockquote>
+<p>Write a program that uses UNIX system calls to ''ping-pong'' a byte between two processes over a pair of pipes, one for each direction. The parent should send a byte to the child; the child should print "&lt;pid&gt;: received ping", where &lt;pid&gt; is its process ID, write the byte on the pipe to the parent, and exit; the parent should read the byte from the child, print "&lt;pid&gt;: received pong", and exit. Your solution should be in the file user/pingpong.c.</p>
+</blockquote>
+<p>新建两对<code>pipe</code>，用<code>fork</code>建立子进程。两个进程通过<code>pipe</code>互相通信。</p>
+<p><code>pipe</code>是单向的。如下建立一对<code>pipe</code>时： <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> fd[<span class="number">2</span>];</span><br><span class="line">pipe(fd);</span><br></pre></td></tr></table></figure> <code>fd[0]</code>是读端，而<code>fd[1]</code>是写端</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// user/pingpong.c</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/stat.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="type">int</span> pipefd[<span class="number">4</span>];</span><br><span class="line">    <span class="type">char</span> buffer[<span class="number">4</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="keyword">if</span>(pipe(pipefd) &lt; <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;pipe error\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(pipe(&amp;(pipefd[<span class="number">2</span>])) &lt; <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;pipe error\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> pid = fork();</span><br><span class="line">    <span class="keyword">if</span>(pid &lt; <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;fork error\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(pid == <span class="number">0</span>)&#123; <span class="comment">// child</span></span><br><span class="line">        close(pipefd[<span class="number">1</span>]);</span><br><span class="line">        close(pipefd[<span class="number">2</span>]);</span><br><span class="line">        pid = getpid();</span><br><span class="line">        <span class="keyword">if</span>(read(pipefd[<span class="number">0</span>], buffer, <span class="number">1</span>) &gt; <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d: received ping\n&quot;</span>, pid);</span><br><span class="line">            write(pipefd[<span class="number">3</span>], <span class="string">&quot;b&quot;</span>, <span class="number">1</span>);</span><br><span class="line">            close(pipefd[<span class="number">0</span>]);</span><br><span class="line">            close(pipefd[<span class="number">3</span>]);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span>&#123; <span class="comment">// parent</span></span><br><span class="line">        close(pipefd[<span class="number">0</span>]);</span><br><span class="line">        close(pipefd[<span class="number">3</span>]);</span><br><span class="line">        pid = getpid();</span><br><span class="line">        write(pipefd[<span class="number">1</span>], <span class="string">&quot;a&quot;</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span>(read(pipefd[<span class="number">2</span>], buffer, <span class="number">1</span>) &gt; <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d: received pong\n&quot;</span>, pid);</span><br><span class="line">            close(pipefd[<span class="number">1</span>]);</span><br><span class="line">            close(pipefd[<span class="number">2</span>]);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="primes">primes</h1>
+<blockquote>
+<p>Write a concurrent version of prime sieve using pipes. This idea is due to Doug McIlroy, inventor of Unix pipes. The picture halfway down <a target="_blank" rel="noopener" href="https://swtch.com/~rsc/thread/">this page</a> and the surrounding text explain how to do it. Your solution should be in the file user/primes.c.</p>
+</blockquote>
+<p>通过这样一个算法来判断一个数是否为质数： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">建立base为2-n的n个进程，将他们依次连接起来</span><br><span class="line">输入：对base为2的进程输入待判断的数字N</span><br><span class="line">每个进程：</span><br><span class="line">    从左边的进程接收数字N</span><br><span class="line">    if N == base:</span><br><span class="line">        print N</span><br><span class="line">    if N % base == 0:</span><br><span class="line">        丢弃N</span><br><span class="line">    else:</span><br><span class="line">        将N发送给右侧进程</span><br></pre></td></tr></table></figure></p>
+<p><img src="https://swtch.com/~rsc/thread/sieve.gif" alt="sieve"></p>
+<p>我们考虑采用递归的方法完成这一任务。在每次递归中创建新的<code>pipe</code>并执行<code>fork</code>，父进程负责处理输入输出，子进程负责继续递归下去。</p>
+<p>实现上需要注意的是，实验设计的xv6操作系统支持的最大<code>fd</code>数有限，因此每个进程只维护其需要用到的<code>pipefd</code>：只保留接收左侧进程传入数字的<code>pipefd</code>和向右侧进程输出数字的<code>pipefd</code>，关闭其他的<code>fd</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// user/primes.c</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/stat.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RFD(idx) (((idx)*2)-2)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> WFD(idx) (((idx)*2)+1)</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">process</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="type">int</span> base;</span><br><span class="line">    <span class="type">int</span> idx;</span><br><span class="line">    <span class="type">int</span> rfd;</span><br><span class="line">    <span class="type">int</span> wfd;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> fds[<span class="number">24</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> primes[] = &#123;<span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">11</span>, <span class="number">13</span>, <span class="number">17</span>, <span class="number">19</span>, <span class="number">23</span>, <span class="number">29</span>, <span class="number">31</span>&#125;;</span><br><span class="line"><span class="type">int</span> len = <span class="number">11</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">work</span><span class="params">(<span class="keyword">struct</span> process* p)</span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">process</span> <span class="title">next</span>;</span></span><br><span class="line">    next.idx = p-&gt;idx + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(next.idx &gt; <span class="number">11</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    next.base = primes[next.idx];</span><br><span class="line">    pipe(&amp;fds[(p-&gt;idx)*<span class="number">2</span>]);</span><br><span class="line">    p-&gt;wfd = fds[WFD(p-&gt;idx)];</span><br><span class="line">    next.rfd = fds[RFD(next.idx)];</span><br><span class="line">    <span class="type">int</span> pid = fork();</span><br><span class="line">    <span class="keyword">if</span>(pid == <span class="number">0</span>)&#123; <span class="comment">// child</span></span><br><span class="line">        close(p-&gt;wfd);</span><br><span class="line">        work(&amp;next);</span><br><span class="line">        close(next.rfd);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span>&#123; <span class="comment">// parent</span></span><br><span class="line">        close(next.rfd);</span><br><span class="line">        <span class="type">char</span> num;</span><br><span class="line">        <span class="keyword">if</span>(p-&gt;idx)&#123;</span><br><span class="line">            <span class="keyword">while</span>(read(p-&gt;rfd, &amp;num, <span class="number">1</span>) &gt; <span class="number">0</span>)&#123;</span><br><span class="line">                <span class="keyword">if</span>(num == p-&gt;base)&#123;</span><br><span class="line">                    <span class="built_in">printf</span>(<span class="string">&quot;prime %d\n&quot;</span>, num);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(num % p-&gt;base)&#123;</span><br><span class="line">                    write(p-&gt;wfd, &amp;num, <span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span>&#123;</span><br><span class="line">                    <span class="comment">// drop: do nothing</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">for</span>(num = <span class="number">2</span>; num &lt; <span class="number">35</span>; num++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(num == p-&gt;base)&#123;</span><br><span class="line">                    <span class="built_in">printf</span>(<span class="string">&quot;prime %d\n&quot;</span>, num);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(num % p-&gt;base)&#123;</span><br><span class="line">                    write(p-&gt;wfd, &amp;num, <span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span>&#123;</span><br><span class="line">                    <span class="comment">// drop: do nothing</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        close(p-&gt;wfd);</span><br><span class="line">        wait(<span class="number">0</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">process</span> <span class="title">p</span>;</span></span><br><span class="line">    p.base = <span class="number">2</span>;</span><br><span class="line">    p.idx = <span class="number">0</span>;</span><br><span class="line">    p.rfd = <span class="number">0</span>;</span><br><span class="line">    p.wfd = <span class="number">0</span>;</span><br><span class="line">    work(&amp;p);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="find">find</h1>
+<blockquote>
+<p>Write a simple version of the UNIX find program: find all the files in a directory tree with a specific name. Your solution should be in the file user/find.c.</p>
+</blockquote>
+<p>递归地查找当前目录下有没有指定的文件。对目录内容进行遍历可以参考<code>user/ls.c</code>中的实现。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// user/find.c</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/stat.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/fs.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">pathmatch</span><span class="params">(<span class="type">char</span>* path, <span class="type">char</span>* target)</span>&#123;</span><br><span class="line">    <span class="type">char</span>* p;</span><br><span class="line">    <span class="keyword">for</span>(p=path+<span class="built_in">strlen</span>(path); p &gt;= path &amp;&amp; *p != <span class="string">&#x27;/&#x27;</span>; p--);</span><br><span class="line">    p++;</span><br><span class="line">    <span class="keyword">return</span> !<span class="built_in">strcmp</span>(p, target);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">find</span><span class="params">(<span class="type">char</span>* path, <span class="type">char</span>* target)</span>&#123;</span><br><span class="line">    <span class="type">int</span> fd = <span class="number">0</span>;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">stat</span> <span class="title">st</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">dirent</span> <span class="title">de</span>;</span></span><br><span class="line">    <span class="keyword">if</span>((fd = open(path, <span class="number">0</span>)) &lt; <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;find: cannot open %s\n&quot;</span>, path);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(fstat(fd, &amp;st) &lt; <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;find: cannot stat %s\n&quot;</span>, path);</span><br><span class="line">        close(fd);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(pathmatch(path, target))&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, path);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(st.type == T_DIR)&#123;</span><br><span class="line">        <span class="keyword">while</span>(read(fd, &amp;de, <span class="keyword">sizeof</span>(de)) == <span class="keyword">sizeof</span>(de))&#123;</span><br><span class="line">            <span class="keyword">if</span>(de.inum &amp;&amp; <span class="built_in">strcmp</span>(de.name, <span class="string">&quot;.&quot;</span>) &amp;&amp; <span class="built_in">strcmp</span>(de.name, <span class="string">&quot;..&quot;</span>))&#123;</span><br><span class="line">                <span class="type">char</span> buffer[<span class="number">32</span>];</span><br><span class="line">                <span class="type">int</span> len = <span class="built_in">strlen</span>(path);</span><br><span class="line">                <span class="built_in">strcpy</span>(buffer, path);</span><br><span class="line">                buffer[len] = <span class="string">&#x27;/&#x27;</span>;</span><br><span class="line">                <span class="built_in">strcpy</span>(buffer + len + <span class="number">1</span>, de.name);</span><br><span class="line">                find(buffer, target);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    close(fd);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>* argv[])</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(argc &lt; <span class="number">3</span>)&#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;error: missing argument\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">char</span>* path = argv[<span class="number">1</span>];</span><br><span class="line">    <span class="type">char</span>* target = argv[<span class="number">2</span>];</span><br><span class="line">    find(path, target);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="xargs">xargs</h1>
+<blockquote>
+<p>Write a simple version of the UNIX xargs program: read lines from the standard input and run a command for each line, supplying the line as arguments to the command. Your solution should be in the file user/xargs.c.</p>
+</blockquote>
+<p>要求的描述看着可能有些绕，不过这里有一个例子：执行<code>xargs echo hello</code>后，输入<code>aaa bbb\n</code>，程序执行<code>echo hello aaa bbb</code>，再输入<code>ccc\n</code>，程序执行<code>echo hello ccc</code></p>
+<p>每次接收一行输入，把这些输入拼接在<code>xargs</code>的<code>argv[1]~argv[argc-1]</code>的后面，再<code>fork</code>并<code>exec</code>就好。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// user/xargs.c</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/stat.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/param.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>* argv[])</span>&#123;</span><br><span class="line">    <span class="type">char</span>* args[MAXARG] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">1</span>; i &lt; argc; i++)&#123;</span><br><span class="line">        args[i<span class="number">-1</span>] = argv[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(i = i - <span class="number">1</span>; i &lt; MAXARG; i++)&#123;</span><br><span class="line">        args[i] = (<span class="type">char</span>*) <span class="built_in">malloc</span>(<span class="number">32</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    i = argc - <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> idx = <span class="number">0</span>;</span><br><span class="line">    <span class="type">char</span> c = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (read(<span class="number">0</span>, &amp;c, <span class="number">1</span>) == <span class="number">1</span>)&#123;</span><br><span class="line">        args[i][idx] = c;</span><br><span class="line">        <span class="keyword">if</span>(c == <span class="string">&#x27; &#x27;</span>)&#123;</span><br><span class="line">            args[i][idx] = <span class="number">0</span>;</span><br><span class="line">            i++;</span><br><span class="line">            idx = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(c == <span class="string">&#x27;\n&#x27;</span>)&#123;</span><br><span class="line">            args[i][idx] = <span class="number">0</span>;</span><br><span class="line">            idx = <span class="number">0</span>;</span><br><span class="line">            i++;</span><br><span class="line">            <span class="type">char</span>* ptr = args[i];</span><br><span class="line">            args[i] = <span class="number">0</span>;</span><br><span class="line">            <span class="type">int</span> pid = fork();</span><br><span class="line">            <span class="keyword">if</span>(pid &lt; <span class="number">0</span>)&#123;</span><br><span class="line">                <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(pid == <span class="number">0</span>)&#123;</span><br><span class="line">                exec(args[<span class="number">0</span>], args);</span><br><span class="line">                <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                wait(<span class="number">0</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            args[i] = ptr;</span><br><span class="line">            i = argc - <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        idx++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/OS/" rel="tag"># OS</a>
+              <a href="/tags/MIT-6-S081/" rel="tag"># MIT 6.S081</a>
+              <a href="/tags/labs/" rel="tag"># labs</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/09/26/MIT-6-S081-labs/" rel="prev" title="MIT 6.S081 labs">
+      <i class="fa fa-chevron-left"></i> MIT 6.S081 labs
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/09/26/MIT-6-S081-lab-syscall/" rel="next" title="MIT 6.S081 lab syscall">
+      MIT 6.S081 lab syscall <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#sleep"><span class="nav-number">1.</span> <span class="nav-text">sleep</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#pingpong"><span class="nav-number">2.</span> <span class="nav-text">pingpong</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#primes"><span class="nav-number">3.</span> <span class="nav-text">primes</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#find"><span class="nav-number">4.</span> <span class="nav-text">find</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#xargs"><span class="nav-number">5.</span> <span class="nav-text">xargs</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">tianyang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tianyang</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

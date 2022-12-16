@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"t1anyang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="浅谈商用软件的保护技术">
+<meta property="og:type" content="article">
+<meta property="og:title" content="软件保护技术简谈">
+<meta property="og:url" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/index.html">
+<meta property="og:site_name" content="Tianyang&#39;s blog">
+<meta property="og:description" content="浅谈商用软件的保护技术">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/1.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/2.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/4.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/5.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/6.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/7.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/3.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/8.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/9.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/10.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/11.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/12.2.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/12.1.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/13.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/14.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/15.png">
+<meta property="article:published_time" content="2022-10-04T23:16:29.000Z">
+<meta property="article:modified_time" content="2022-12-15T04:50:34.859Z">
+<meta property="article:author" content="tianyang">
+<meta property="article:tag" content="software protection">
+<meta property="article:tag" content="reverse engineering">
+<meta property="article:tag" content="cryptography">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/1.png">
+
+<link rel="canonical" href="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>软件保护技术简谈 | Tianyang's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Tianyang's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://t1anyang.github.io/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="tianyang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Tianyang's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          软件保护技术简谈
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-10-05 07:16:29" itemprop="dateCreated datePublished" datetime="2022-10-05T07:16:29+08:00">2022-10-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-12-15 12:50:34" itemprop="dateModified" datetime="2022-12-15T12:50:34+08:00">2022-12-15</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>浅谈商用软件的保护技术</p>
+<span id="more"></span>
+<h1 id="前置知识">前置知识</h1>
+<p>您有必要在以下领域掌握基本理论知识和实践经验：</p>
+<ul>
+<li>密码学</li>
+<li>逆向分析</li>
+</ul>
+<h1 id="软件保护模型">软件保护模型</h1>
+<h2 id="应用背景">应用背景</h2>
+<p>软件开发者对用户进行授权，从而用户可以使用该软件。</p>
+<p>授权的粒度为可以为用户账号，也可以为设备。</p>
+<h2 id="目的">目的</h2>
+<p>阻止软件的盗版行为：</p>
+<ul>
+<li>已经获得授权的设备可以使用软件</li>
+<li>未获得授权的设备无法使用软件</li>
+</ul>
+<p>阻止对软件的破解行为 - 黑客难以伪造软件开发者的授权 - 黑客难以破解软件的保护措施</p>
+<h2 id="敌手假设">敌手假设</h2>
+<p>我们的敌手为试图破解我们软件的黑客。</p>
+<p>我们的用户按对软件破解能力从弱到强分为以下四个等级：</p>
+<ul>
+<li>good citizen: 总是遵纪守法、尊重知识产权的好公民；</li>
+<li>naive user: 不掌握逆向分析技术，但会将软件复制来复制去的用户；</li>
+<li>reverse engineer: 可以对软件进行逆向分析，但不会篡改软件；</li>
+<li>big hacker: 既可以对软件进行逆向分析，也可以篡改软件。</li>
+</ul>
+<h1 id="软件保护手段">软件保护手段</h1>
+<h2 id="注册机">注册机</h2>
+<h3 id="简单注册机">简单注册机</h3>
+<p>注册：</p>
+<ol type="1">
+<li>用户向软件作者提供用户码<span class="math inline">\(U\)</span></li>
+<li>软件作者计算注册码<span class="math inline">\(R=f(U)\)</span></li>
+</ol>
+<p>验证：使用软件时</p>
+<ol type="1">
+<li>用户向软件提供注册码、用户码<span class="math inline">\((R, U)\)</span></li>
+<li>软件验证注册码、注册码的合法性<span class="math inline">\(F=(U, R)\)</span></li>
+</ol>
+<p>Q: 在我们期望软件的授权粒度为设备时，该方法能够抵御哪种层次的敌手？<br>
+A: 只能抵御good citizens. naive users可以向软件作者申请一对合法的<span class="math inline">\((R, U)\)</span>对后在任意设备上使用软件。</p>
+<h3 id="设备码">设备码</h3>
+<p>假设每一台物理设备都能生成唯一的设备标识码<span class="math inline">\(D\)</span></p>
+<p>可以来源于硬盘标识码、mac地址等硬件信息</p>
+<h3 id="设备码-注册机">设备码 + 注册机</h3>
+<p>注册：</p>
+<ol type="1">
+<li>用户向软件作者提供用户码<span class="math inline">\(U\)</span>，设备标识码<span class="math inline">\(D\)</span></li>
+<li>软件作者计算注册码<span class="math inline">\(R=f(U, D)\)</span></li>
+</ol>
+<p>验证：使用软件时</p>
+<ol type="1">
+<li>用户向软件提供注册码、用户码<span class="math inline">\((R, U)\)</span></li>
+<li>软件获得设备标识码<span class="math inline">\(D\)</span></li>
+<li>软件验证注册码、注册码的合法性<span class="math inline">\(F=(U, D, R)\)</span></li>
+</ol>
+<p>Q: 该方法能够抵御哪种层次的敌手？<br>
+A: 视<span class="math inline">\(f, F\)</span>的实现方式而定。如果reverse engineers可以通过<span class="math inline">\(F\)</span>计算出<span class="math inline">\(f\)</span>，那么该方法就只能抵御naive users及以下的敌手。反之，则可以抵御reverse engineers.</p>
+<h3 id="设备码-注册机-非对称加密">设备码 + 注册机 + 非对称加密</h3>
+<p>Q: 由<span class="math inline">\(F\)</span>算得<span class="math inline">\(f\)</span>一定是可行的吗？<br>
+A: 不一定</p>
+<p>考虑使用RSA算法构建<span class="math inline">\(f,F\)</span>:</p>
+<p>软件开发者持有公私钥对<span class="math inline">\(n, e, d\)</span>，用户持有软件开发者的公钥<span class="math inline">\(n, e\)</span>，令：</p>
+<p><span class="math inline">\(m = (U, D), c = R\)</span></p>
+<p><span class="math inline">\(f := c = m^d \mod n\)</span></p>
+<p><span class="math inline">\(F := m \overset{\text{?}} = c^e \mod d\)</span></p>
+<p>显然，由<span class="math inline">\(F\)</span>能否算得<span class="math inline">\(f\)</span>的问题可以归约到RSA算法是否是安全的。</p>
+<p>但理论上安全不代表实际安全。错误的实现依然会带来注册机被破解的可能性。例如，软件在注册阶段读取一个注册文件<code>key_file</code>，包含以下内容：</p>
+<ol type="1">
+<li>用户码<span class="math inline">\(D\)</span></li>
+<li>软件作者RSA的公钥<span class="math inline">\(n, e\)</span></li>
+<li>注册码<span class="math inline">\(R\)</span></li>
+</ol>
+<p>软件验证采用如下步骤</p>
+<ol type="1">
+<li>读取<code>key_file</code>及设备识别码<span class="math inline">\(D\)</span>，获得<span class="math inline">\(m=(U, D), c=R, n, e\)</span></li>
+<li>验证<span class="math inline">\(m \overset{\text{?}} = c^e \mod d\)</span></li>
+</ol>
+<p>Q: 该方法在面对reverse engineers时是安全的吗？<br>
+A: 不是。</p>
+<p>作为敌手，我们自己生成一个RSA公私钥对<span class="math inline">\(n&#39;, e&#39;, d&#39;\)</span>, 计算<span class="math inline">\(c&#39;=m^{d&#39;} \mod n&#39;\)</span>，伪造一个<code>key_file</code>也可以通过验证。</p>
+<h2 id="完整性保护">完整性保护</h2>
+<p>Q: 假设我们通过设备码+注册机+非对称加密实现了一个在reverse engeneer面前是安全的软件保护方法，该方法在big hacker面前是安全的吗？<br>
+A: 不是。big hackers拥有篡改软件的能力，因此敌手可以篡改我们的软件使得验证结果始终为真。</p>
+<p>例如，笔者开发了一个自动提取<code>.doc</code>文档中文字内容的软件，希望对其加以保护，实现了一个简单的注册机： <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">verify</span><span class="params">()</span>&#123;</span><br><span class="line">    FILE* key_file = fopen(<span class="string">&quot;key&quot;</span>, <span class="string">&quot;r&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span>(!key_file)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">char</span> buffer[<span class="number">64</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    fread(buffer, <span class="number">1</span>, <span class="number">64</span>, key_file);</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">memcmp</span>(buffer, <span class="string">&quot;k1816:123456\n&quot;</span>, <span class="number">13</span>))&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!verify())&#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;fail to verify\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// codes...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 执行效果如下:</p>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/1.png" alt="doc_extract"></p>
+<p>他在IDA中看起来是这样的</p>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/2.png" alt="doc_in_ida"></p>
+<p>作为攻击者，我们可以对可执行文件做patch，让该函数始终返回1.</p>
+<ul>
+<li>找到<code>fopen</code>失败时返回0处的逻辑，将其改为返回1</li>
+</ul>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/4.png" alt="fopen_patch"></p>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/5.png" alt="fopen_patched"></p>
+<ul>
+<li>找到字符串不相同时返回0的逻辑，将其改为返回1</li>
+</ul>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/6.png" alt="memcmp_patch"></p>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/7.png" alt="memcmp_patched"></p>
+<p>这段函数经过我们的修改后变成了这样:</p>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/3.png" alt="doc_patched"></p>
+<p>甚至，如果这个验证函数过于复杂，我们都不必理清他的真正逻辑，只需将其修改成如下形式就可以让其始终返回1:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">push rbp;</span><br><span class="line">mov rbp, rsp;</span><br><span class="line">mov eax, 1;</span><br><span class="line">leave;</span><br><span class="line">ret;</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/8.png" alt="doc_patched2"></p>
+<p>举上述例子是为了说明对软件做篡改是并不复杂的一件事，对注册函数进行篡改从而bypass注册机制的威胁是客观存在的。因此，我们还需要对软件完整性加以保护。</p>
+<p>我们可以采用MD5 SHA1等哈希算法对软件的完整性进行校验。当然校验函数也时可以被篡改的，因此我们可以：</p>
+<ul>
+<li>在软件的各个关键位置加入完整性校验</li>
+<li>采用不同的算法进行完整性校验</li>
+<li>可执行文件和动态链接库文件之间互相校验</li>
+<li>尽可能地混淆代码</li>
+</ul>
+<p>以增大软件被破解的难度。</p>
+<p>并且我们在检测到软件完整性被破坏时，可以执行一些对用户的惩罚措施，例如删除用户软件等。</p>
+<h2 id="反静态分析">反静态分析</h2>
+<p>为了增大敌手的逆向难度，我们可以采用一些反静态分析的措施。常见的反静态分析方式有如下几种：</p>
+<ul>
+<li>名称混淆</li>
+<li>字符串加密</li>
+<li>代码加密</li>
+<li>花指令</li>
+<li>控制流平坦化</li>
+<li>VM</li>
+<li>...</li>
+</ul>
+<p>下面对前4种实现上较为简单的加以价绍。</p>
+<h3 id="名称混淆">名称混淆</h3>
+<p>在上面的例子中，敌手看到我们的函数名<code>verify</code>就会很自然地想到该函数是用来验证注册码的。我们可以给他换一个普通的名字从而迷惑敌手，也可以加入一些叫做<code>verify</code>而实际上不起作用的函数。真真假假，假假真真。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">program_init</span><span class="params">()</span>&#123;</span><br><span class="line">    FILE* key_file = fopen(<span class="string">&quot;config&quot;</span>, <span class="string">&quot;r&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span>(!key_file)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">char</span> buffer[<span class="number">64</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    fread(buffer, <span class="number">1</span>, <span class="number">64</span>, key_file);</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">memcmp</span>(buffer, <span class="string">&quot;tianyang:123456\n&quot;</span>, <span class="number">13</span>))&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此外，IDA, gdb等工具可以知道函数的名称是因为有符号表的存在。删除符号表并不会影响程序的运行，但可以对逆向工作造成一些阻碍。<code>gcc</code>可以通过<code>-s</code>标签来删除符号表，删除了符号表后的程序在IDA里看起来就像这样:</p>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/9.png" alt="delete_symbols1"></p>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/10.png" alt="delete_symbols2"></p>
+<h3 id="字符串加密">字符串加密</h3>
+<p>从敌手的角度出发，我们看到<code>"fail to verify"</code>的提示信息，就会想到验证注册的代码就在该字符串引用的附近。</p>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/11.png" alt="string_xref1"></p>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/12.2.png" alt="string_xref2"></p>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/12.1.png" alt="string_xref3"></p>
+<p>从而推测出函数<code>sub_25A4</code>就是验证注册的函数。</p>
+<p>因此，我们可以在程序中只存储加密后的字符串，在使用字符串时再进行解密。一个简单的例子如下:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">decrypt</span><span class="params">(<span class="type">char</span>* dst, <span class="type">char</span>* src, <span class="type">int</span> len)</span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; len; i++)&#123;</span><br><span class="line">        dst[i] = src[i] ^ <span class="number">0x39</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">char</span> msg[<span class="number">15</span>] = &#123;<span class="number">0x5f</span>, <span class="number">0x58</span>, <span class="number">0x50</span>, <span class="number">0x55</span>, <span class="number">0x19</span>, <span class="number">0x4d</span>, <span class="number">0x56</span>, <span class="number">0x19</span>, <span class="number">0x4f</span>, <span class="number">0x5c</span>, <span class="number">0x4b</span>, <span class="number">0x50</span>, <span class="number">0x5f</span>, <span class="number">0x40</span>, <span class="number">0x33</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>* argv[])</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!verify())&#123;</span><br><span class="line">        <span class="type">char</span> buffer[<span class="number">20</span>];</span><br><span class="line">        decrypt(buffer, msg, <span class="number">15</span>);</span><br><span class="line">        buffer[<span class="number">16</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;%s&quot;</span>, buffer);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// codes...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="代码加密">代码加密</h3>
+<p>为了进一步加大敌手逆向的难度，我们还可以对代码加密，在执行时将代码解密。</p>
+<p>下面是一个简单的例子。我们实现了一个简单的加法器，并对他的加法函数进行了一个简单的加密:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;errno.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    push rbp; </span></span><br><span class="line"><span class="comment">    mov rbp, rsp; </span></span><br><span class="line"><span class="comment">    add rdx, rcx; </span></span><br><span class="line"><span class="comment">    mov rax, rdx; </span></span><br><span class="line"><span class="comment">    leave; </span></span><br><span class="line"><span class="comment">    ret; </span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="type">char</span> encrypted_add[<span class="number">12</span>] = &#123;<span class="number">0x62</span>,<span class="number">0x7f</span>,<span class="number">0xbe</span>,<span class="number">0xd2</span>,<span class="number">0x7f</span>,<span class="number">0x36</span>,<span class="number">0xfd</span>,<span class="number">0x7f</span>,<span class="number">0xbe</span>,<span class="number">0xe7</span>,<span class="number">0xfe</span>,<span class="number">0xf4</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">decrypt</span><span class="params">(<span class="type">char</span>* dst, <span class="type">char</span>* src, <span class="type">int</span> len)</span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; len; i++)&#123;</span><br><span class="line">        dst[i] = src[i] ^ <span class="number">0x37</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>* argv[])</span>&#123;</span><br><span class="line">    <span class="type">long</span> a = atol(argv[<span class="number">1</span>]);</span><br><span class="line">    <span class="type">long</span> b = atol(argv[<span class="number">2</span>]);</span><br><span class="line">    <span class="type">int</span> alloc_size = getpagesize(); </span><br><span class="line">    <span class="type">long</span> (*add)(<span class="type">long</span>, <span class="type">long</span>) = mmap(<span class="literal">NULL</span>, alloc_size, PROT_READ|PROT_WRITE|PROT_EXEC, </span><br><span class="line">                                MAP_ANONYMOUS|MAP_PRIVATE, <span class="number">-1</span>, <span class="number">0</span>); </span><br><span class="line">    decrypt((<span class="type">char</span>*)add, encrypted_add, <span class="number">12</span>);</span><br><span class="line">    <span class="type">long</span> num = add(a, b);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%ld\n&quot;</span>, num);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>需要执行add时，我们可以看到解密后的代码</p>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/13.png" alt="code_enc"></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ add 1 2</span><br><span class="line">3</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<h3 id="花指令">花指令</h3>
+<p>我们可以向代码中添加一些花指令，它们不会影响程序的正常执行，但会干扰逆向软件的反汇编功能。</p>
+<p>目前的反汇编算法主要分为两种: - 线性扫描算法。该算法从程序开始位置出发，逐条地将机器码翻译为汇编代码 - 递归行进算法。该算法从程序入口点出发，分析程序可能的控制流程，在每一个基本块开始处进行反汇编。</p>
+<p>欺骗线性扫描算法较为简单，我们只需要在代码里插入一些数据，例如<code>call</code>指令的<code>opcode E8</code>，并且用<code>jmp</code>越过这些数据。线性扫描算法却会将这些指令当作代码进行反汇编，从而得到错误的结果。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">hello</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;hello &quot;</span>);</span><br><span class="line">    __asm__(</span><br><span class="line">        <span class="string">&quot;jmp Label1;&quot;</span></span><br><span class="line">        <span class="string">&quot;.byte 0xe8;&quot;</span> <span class="comment">// call</span></span><br><span class="line">        <span class="string">&quot;Label1:&quot;</span></span><br><span class="line">    );</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;world\n&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>gdb采用的是线性反汇编算法，我们可以看到gdb对该部分的分析出现了错误。</p>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/14.png" alt="junk_code_gdb"></p>
+<p>而对于递归行进算法，由于我们填充的垃圾数据并不会被程序的控制流访问，因此该部分不会被反汇编。该方式无法欺骗采用递归行进算法的IDA.</p>
+<p>欺骗递归行进算法的基本思路同样是填充垃圾数据，使其被判断为代码并反汇编。例如，我们可以构造这样一段花指令:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">xor rax, rax;</span><br><span class="line">test rax, rax;</span><br><span class="line">jz label1;</span><br><span class="line">.byte 0xe8 // call</span><br><span class="line">label1:</span><br></pre></td></tr></table></figure>
+<p>在进行跳转时，<code>rax</code>寄存器的值被我们设置为0，因此程序正常执行时永远不会到达垃圾数据处。但递归行进算法会将我们的数据视作一个基本块的开始，从而导致冲突。</p>
+<p>值得一提的是，现在的IDA已经可以识别出这种永远不可能跳转到的地方。为此，我们可以略加改造:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">hello</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;hello &quot;</span>);</span><br><span class="line">    fopen(<span class="string">&quot;no_exist&quot;</span>, <span class="string">&quot;r&quot;</span>); <span class="comment">// must return 0</span></span><br><span class="line">    __asm__(</span><br><span class="line">        <span class="string">&quot;test %eax, %eax;&quot;</span></span><br><span class="line">        <span class="string">&quot;jnz Label1;&quot;</span></span><br><span class="line">        <span class="string">&quot;jz Label2;&quot;</span></span><br><span class="line">        <span class="string">&quot;Label1:&quot;</span></span><br><span class="line">        <span class="string">&quot;.byte 0xe8;&quot;</span> <span class="comment">// call</span></span><br><span class="line">        <span class="string">&quot;Label2:&quot;</span></span><br><span class="line">    );</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;world\n&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们打开一个不存在的文件，<code>fopen</code>一定会返回<code>0</code>. IDA无法判断这一点，因此就会将<code>0xe8</code>视作一个基本块的开始，从而无法正确地反汇编。</p>
+<p><img src="/2022/10/04/%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%8A%80%E6%9C%AF%E7%AE%80%E8%B0%88/15.png" alt="junk_code_ida"></p>
+<h3 id="小结">小结</h3>
+<p>反静态分析技术要多从逆向者的角度思考，考虑什么样的措施能给逆向者带来麻烦，逆向者又有什么样的方法反制这些措施。通过反静态分析技术保护程序能够显著地增大程序逆向难度，保护我们的软件。</p>
+<h1 id="结语">结语</h1>
+<p>Q: 存在一种软件保护方法使得任意敌手都无法破解吗？<br>
+A: 不存在。一个最极端的例子：一个big hacker拥有无限的逆向能力和软件篡改能力，他完全可以修改软件中每一处软件保护相关的代码，让这些保护手段失效。</p>
+<p>但这并不说明软件保护是毫无意义的。一方面，现实中的敌手不可能拥有无限的能力；另一方面，当破解软件花费的开销(时间、精力、金钱)远大于购买软件时，用户也会倾向于购买软件。</p>
+<h1 id="推荐阅读">推荐阅读</h1>
+<p>[1] 《加密与解密》段钢编著 电子工业出版社 第17章 软件保护技术</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/software-protection/" rel="tag"># software protection</a>
+              <a href="/tags/reverse-engineering/" rel="tag"># reverse engineering</a>
+              <a href="/tags/cryptography/" rel="tag"># cryptography</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/09/26/whoami/" rel="prev" title="whoami">
+      <i class="fa fa-chevron-left"></i> whoami
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/10/19/MIT-6-S081-lab-pgtbl/" rel="next" title="MIT-6-S081-lab-pgtbl">
+      MIT-6-S081-lab-pgtbl <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">前置知识</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">软件保护模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E8%83%8C%E6%99%AF"><span class="nav-number">2.1.</span> <span class="nav-text">应用背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E7%9A%84"><span class="nav-number">2.2.</span> <span class="nav-text">目的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%8C%E6%89%8B%E5%81%87%E8%AE%BE"><span class="nav-number">2.3.</span> <span class="nav-text">敌手假设</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E4%BF%9D%E6%8A%A4%E6%89%8B%E6%AE%B5"><span class="nav-number">3.</span> <span class="nav-text">软件保护手段</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E6%9C%BA"><span class="nav-number">3.1.</span> <span class="nav-text">注册机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E6%B3%A8%E5%86%8C%E6%9C%BA"><span class="nav-number">3.1.1.</span> <span class="nav-text">简单注册机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E5%A4%87%E7%A0%81"><span class="nav-number">3.1.2.</span> <span class="nav-text">设备码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E5%A4%87%E7%A0%81-%E6%B3%A8%E5%86%8C%E6%9C%BA"><span class="nav-number">3.1.3.</span> <span class="nav-text">设备码 + 注册机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E5%A4%87%E7%A0%81-%E6%B3%A8%E5%86%8C%E6%9C%BA-%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="nav-number">3.1.4.</span> <span class="nav-text">设备码 + 注册机 + 非对称加密</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E6%80%A7%E4%BF%9D%E6%8A%A4"><span class="nav-number">3.2.</span> <span class="nav-text">完整性保护</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90"><span class="nav-number">3.3.</span> <span class="nav-text">反静态分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8D%E7%A7%B0%E6%B7%B7%E6%B7%86"><span class="nav-number">3.3.1.</span> <span class="nav-text">名称混淆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8A%A0%E5%AF%86"><span class="nav-number">3.3.2.</span> <span class="nav-text">字符串加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%8A%A0%E5%AF%86"><span class="nav-number">3.3.3.</span> <span class="nav-text">代码加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%B1%E6%8C%87%E4%BB%A4"><span class="nav-number">3.3.4.</span> <span class="nav-text">花指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">3.3.5.</span> <span class="nav-text">小结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-number">4.</span> <span class="nav-text">结语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB"><span class="nav-number">5.</span> <span class="nav-text">推荐阅读</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">tianyang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tianyang</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
