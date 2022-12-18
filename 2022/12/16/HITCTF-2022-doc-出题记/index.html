@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"t1anyang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本人为今年11月我校举办的HITCTF 2022贡献了两道题目: doc和nimgame, 记录一下出题的思路。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HITCTF 2022 doc 出题记">
+<meta property="og:url" content="https://t1anyang.github.io/2022/12/16/HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Tianyang&#39;s blog">
+<meta property="og:description" content="本人为今年11月我校举办的HITCTF 2022贡献了两道题目: doc和nimgame, 记录一下出题的思路。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://t1anyang.github.io/2022/12/16/HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/1.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/12/16/HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/2.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/12/16/HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/3.png">
+<meta property="og:image" content="https://t1anyang.github.io/2022/12/16/HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/4.png">
+<meta property="article:published_time" content="2022-12-16T19:11:22.000Z">
+<meta property="article:modified_time" content="2022-12-18T06:40:34.852Z">
+<meta property="article:author" content="tianyang">
+<meta property="article:tag" content="CTF">
+<meta property="article:tag" content="pwn">
+<meta property="article:tag" content="HITCTF2022">
+<meta property="article:tag" content="出题">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://t1anyang.github.io/2022/12/16/HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/1.png">
+
+<link rel="canonical" href="https://t1anyang.github.io/2022/12/16/HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>HITCTF 2022 doc 出题记 | Tianyang's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Tianyang's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://t1anyang.github.io/2022/12/16/HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="tianyang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Tianyang's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          HITCTF 2022 doc 出题记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-12-17 03:11:22" itemprop="dateCreated datePublished" datetime="2022-12-17T03:11:22+08:00">2022-12-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-12-18 14:40:34" itemprop="dateModified" datetime="2022-12-18T14:40:34+08:00">2022-12-18</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本人为今年11月我校举办的HITCTF 2022贡献了两道题目: <code>doc</code>和<code>nimgame</code>, 记录一下出题的思路。</p>
+<span id="more"></span>
+<h1 id="前言">前言</h1>
+<p>这个题的思路来源于我们研究生组内的项目。今年下半年本人为组里开发了一系列格式文件的文字自动提取的工具。比如输入一个doc文档，用这个工具就可以自动解码文档当中各种复杂的数据结构，并且直接输出UTF-8编码的文本。</p>
+<p>11月初接到出题邀请时，我就想到把这个工具改编一下变成一个pwn题。题目的大致设计思路是给出一个可以提取doc文档中文本内容的工具，并提供一个被限制的<code>flag.doc</code>, 选手们则需要想办法绕过限制，用这个工具来解析<code>flag.doc</code>得到flag.</p>
+<h1 id="文本提取功能">文本提取功能</h1>
+<p>程序的核心功能是从doc文件中提取文字内容。doc文档的具体结构可以参考Open Office的文档[1]和微软的官方文档[2,3]. 简单地说，一个doc文档是由头部和若干个依次排列<code>sector</code>组成的，通常每个<code>sector</code>占512字节。这些<code>sectors</code>串联成了一个个<code>stream</code>, doc文档的功能大致是以<code>stream</code>为基本单位实现的。具体哪些<code>sectors</code>以何种顺序组成了一个<code>stream</code>，由文档头部中的<code>Sector Allocation Table (SAT)</code>和文档中一个<code>stream</code>中的<code>Small Sector Allocation Table (SSAT)</code>给出。其中一个<code>stream</code>被称作<code>directory stream</code>, 包含了一些<code>directory</code>, 每个<code>directory</code>都有名称，有特定的作用，并指向文档中的一个<code>stream</code>. 这些<code>directory</code>以红黑树的形式组织起来。其中一个<code>directory</code>叫做<code>WordDocument</code>, 其指向的<code>stream</code>里就包含了文档中全部的文字内容。</p>
+<p>一份doc文件对文字内容的编码有两种可能的情况。根据我的测试情况，一个纯英文的文件，doc将会采用魔改的ASCII进行编码。说魔改是因为微软对单双引号<code>'</code>, <code>"</code>的编码并不是<code>0x27</code>和<code>0x22</code>, 微软似乎是为了实现引号配对检测的功能，对左右单引号、左右双引号分别给出了<code>0x91, 0x92, 0x93, 0x94</code>的编码。当ASCII无法对文本进行编码，例如文本中有中文时，doc则会转而采用UTF-16进行编码。</p>
+<p>那么分析到这里，我们就可以实现出文本提取的功能了。我们解析文档中的<code>SAT</code>, <code>SSAT</code>, 将源文件按<code>stream</code>组织起来，找到<code>WordDocument directory</code>, 解析其指向的<code>stream</code>, 将其中的魔改ASCII或是UTF-16编码的文本重新编码成UTF-8输出即可。</p>
+<h1 id="web服务">web服务</h1>
+<p>在实现了核心功能后，我考虑了如何将其设计成一道pwn题。如上文所说，我们提供了一个受限制的<code>flag.doc</code>, 我希望让选手来构造一个特殊的doc文件，上传给题目，来绕过或是破坏掉对<code>flag.doc</code>的限制。但用传统pwn题的<code>nc</code>方式传输文件就会过于丑陋，于是我将题目设计成了http服务的形式。在核心功能外，我开发了一个cgi程序。用apache的web server就可以运行cgi程序，HTTP request包的内容将会输入到cgi程序的<code>stdin</code>中，cgi程序在<code>stdout</code>中输出的内容将会发送给client端。</p>
+<p>根据题目的需求，cgi程序为这个web服务实现了五个接口：</p>
+<ul>
+<li>/doc 服务主页</li>
+<li>/doc/ls 列出所有doc文件</li>
+<li>/doc/extract 提取某个doc文件的内容</li>
+<li>/doc/extract_many 提取多个doc文件的内容(后续会解释为什么要提供这个接口)</li>
+<li>/upload 上传doc文件</li>
+</ul>
+<h1 id="漏洞设计">漏洞设计</h1>
+<p>之后来设计漏洞。</p>
+<p>我们为题目环境中的每个doc文件都建立了一个这样的数据结构:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">docsrc</span>&#123;</span></span><br><span class="line">    <span class="type">char</span> mode;</span><br><span class="line">    <span class="type">char</span>* name;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>让<code>mode</code>位指示用户是否有权限访问一个文件。程序初始化时会把flag.doc的<code>mode</code>位置0, 其余文件的<code>mode</code>位置1. 漏洞设计的基本思路是让选手想办法将flag.doc的<code>mode</code>位修改为非0, 从而获得权限查看<code>flag.doc</code>.</p>
+<p>程序bss段的内存如下排列：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">mem</span>&#123;</span></span><br><span class="line">    <span class="type">char</span> utf8text[TEXT_MAX_LEN];</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">docsrc</span> <span class="title">docs</span>[<span class="title">MAX_FILE</span>];</span></span><br><span class="line">    <span class="type">int</span> cnt;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><code>char utf8text[TEXT_MAX_LEN]</code>用来存放doc文件的文本内容，<code>struct docsrc docs[MAX_FILE];</code>数组中的第0个元素对应着flag.doc。我们需要设计一个在<code>utf8text</code>数组上的off-by-one，从而覆盖到flag.doc的mode位。</p>
+<p>出题的时候，我把off-by-one漏洞放在了UTF-16编码的文本向UTF-8翻译的过程中，这个过程以字符为单位，一个一个地根据UTF-16编码计算unicode值，再计算UTF-8编码写入缓冲区中。服务主页上说明了支持英文和中文，在UTF-8编码下一个中文字符总是占3个字节，因此这个翻译的函数会在缓冲区所剩空间小于3字节时停止翻译。但事实上，UTF-8编码下存在占据4字节的单个字符，例如emoji表情。于是在缓冲区空间剩余3字节时，接收到下一个字符为emoji时就会导致溢出。</p>
+<p>在这里解释一下为什么程序提供了<code>extract_many</code>这样的API, 而不是仅提供一个<code>extract</code>. apache的web server对cgi程序调用方式大致是这样的：</p>
+<ul>
+<li>收到客户端的HTTP请求</li>
+<li>将HTTP请求头中的字段作为enviroment，运行cgi程序，将请求体中的内容输入至cgi程序的stdin</li>
+<li>将cgi程序的stdout中的输出发送给客户端</li>
+<li>处理完一个HTTP请求后，cgi程序结束</li>
+</ul>
+<p>即，每一个HTTP请求都会对应一个单独的cgi程序进程。这种做法较为契合HTTP服务的无状态特性，但在解题的过程中，选手需要将覆盖flag.doc的mode位与查看flag.doc放在一个进程里。于是题目只能提供这种一次解析多个文件的API.</p>
+<h1 id="题解">题解</h1>
+<p>本题给出了一个在线提取doc文件文字功能的web服务。</p>
+<p><img src="./HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/1.png" alt="1"></p>
+<p>并且自带一些文档</p>
+<p><img src="./HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/2.png" alt="2"></p>
+<p><code>flag.doc</code>显示为禁止访问，其他的都可以查看。<code>help.doc</code>给出了web服务的所有api</p>
+<p><img src="./HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/3.png" alt="3"></p>
+<p>分析后端程序，发现决定一个文件能否访问由mode位实现</p>
+<p><img src="./HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/4.png" alt="4"></p>
+<p>执行extract时，文字会被输出到bss段上，并且<code>flag.doc</code>的mode位就在文字内容的下一位。</p>
+<p>doc文档对中文等文字内容采用utf-16编码，程序将其转换为utf-8编码再输出。由于程序只支持中文、英文，因此默认了一个utf-8编码下的单个字符最多占3字节。在<code>strencodecpy</code>中，如果缓冲区空间剩下不到3字节就会停止输出，退出循环。</p>
+<p>但实际上，utf-8编码下，存在占4字节的单个字符。例如一个emoji表情占4字节。程序将utf-16编码的字符转换为utf-8时，也正确地转换了这些占4字节的字符，就提供了<code>strencodecpy</code>中向下溢出的可能性。我们可以构造这样一种情况: <code>strencodecpy</code>函数中执行到缓冲区剩余3字节，再提供一个占四字节的字符，从而向下溢出修改<code>flag.doc</code>的mode位。</p>
+<p>为此，我们先用word生成一个合法的doc文档。注意到程序中文字内容长度限制为2048字节，我们向文档中写入一段用utf-8编码占2045字节的文字。为了让文档的编码格式为utf-16而不是ascii，我们需要在文档中输入一些中文。我们输入681个中文字符，再加上两个英文字符(例如'aa')，将文档保存。</p>
+<p>之后我们用010 editor等工具打开刚刚的文档，找到我们输入的文字内容。我们字符串'aa'在utf16编码下为<code>\x61\x00\x61\x00</code>，我们可以通过搜索这4字节内容来快速定位到文字串末尾。之后，我们修改之后的4字节内容，将其改为一个emoji表情的utf16编码。例如，"😄"的编码是<code>\x3d\xd8\x04\xde</code>。这样我们就构造好了我们的<code>exp.doc</code></p>
+<p>把<code>exp.doc</code>传上去，然后在<code>extract_many</code>中先解<code>exp.doc</code>再解<code>flag.doc</code>就可以拿到flag</p>
+<h1 id="题目难度">题目难度</h1>
+<p>在比赛中，这道题的官方难度我定为中等，我出的另一题<code>nimgame</code>定了难。但从比赛的结果来看，做出<code>nimgame</code>的队伍数比做出这道题的多一些。题目对于漏洞的暗示是比较明显的，选手看到flag.doc的mode位正好处在文本内容缓冲区的下方就会有所警觉。事实上gcc在编译的过程中为了防止类似的缓冲区溢出漏洞，通常会将<code>char buffer[LEN]</code>这样的缓冲区排在bss段的最下面。而本题中这样反常的bss段内存排布也会引起选手的注意。</p>
+<p>我并没有删符号表，主要是考虑到把本程序从二进制开始完全逆向的复杂程度，相当于研究明白.doc文件是怎样编码的。在时间只有短短24h, 还有其他题目需要解决的HITCTF中，这个工作量对选手恐怕太大了。赛后和本队的选手交流，他也认为以这个题目的代码量， 如果删符号表恐怕要看好久。</p>
+<p>题目漏洞和doc文档内部的数据结构也没有紧密结合，如果能设计成解析文档内部数据结构时有漏洞，选手需要完全了解了doc文档结构后精心构造一个文件，这样应该会非常难。</p>
+<h1 id="致谢">致谢</h1>
+<p>感谢队友阮行止的技术支持。由于我并没有太多架设web服务的经验，他帮助我完成了题目的web环境架设及JavaScript代码撰写等工作。</p>
+<h1 id="参考">参考</h1>
+<p>[1] <a target="_blank" rel="noopener" href="https://www.openoffice.org/sc/compdocfileformat.pdf">OpenOffice.org's Documentation of the Microsoft Compound Document File Format</a></p>
+<p>[2] <a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-cfb/53989ce4-7b05-4f8d-829b-d08d6148375b">[MS-CFB]: Compound File Binary File Format</a></p>
+<p>[3] <a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-doc/ccd7b486-7881-484c-a137-51170af7cc22">[MS-DOC]: Word (.doc) Binary File Format</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CTF/" rel="tag"># CTF</a>
+              <a href="/tags/pwn/" rel="tag"># pwn</a>
+              <a href="/tags/HITCTF2022/" rel="tag"># HITCTF2022</a>
+              <a href="/tags/%E5%87%BA%E9%A2%98/" rel="tag"># 出题</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/10/19/MIT-6-S081-lab-pgtbl/" rel="prev" title="MIT-6-S081-lab-pgtbl">
+      <i class="fa fa-chevron-left"></i> MIT-6-S081-lab-pgtbl
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E6%8F%90%E5%8F%96%E5%8A%9F%E8%83%BD"><span class="nav-number">2.</span> <span class="nav-text">文本提取功能</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#web%E6%9C%8D%E5%8A%A1"><span class="nav-number">3.</span> <span class="nav-text">web服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E8%AE%BE%E8%AE%A1"><span class="nav-number">4.</span> <span class="nav-text">漏洞设计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A2%98%E8%A7%A3"><span class="nav-number">5.</span> <span class="nav-text">题解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E9%9A%BE%E5%BA%A6"><span class="nav-number">6.</span> <span class="nav-text">题目难度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">7.</span> <span class="nav-text">致谢</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">tianyang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tianyang</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
