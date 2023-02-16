@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"t1anyang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="MIT 6.S081 lab traps 思路及解决方案">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT 6.S081 lab traps">
+<meta property="og:url" content="https://t1anyang.github.io/2023/02/15/MIT-6-S081-lab-traps/index.html">
+<meta property="og:site_name" content="Tianyang&#39;s blog">
+<meta property="og:description" content="MIT 6.S081 lab traps 思路及解决方案">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-02-15T22:58:08.000Z">
+<meta property="article:modified_time" content="2023-02-16T08:21:13.725Z">
+<meta property="article:author" content="tianyang">
+<meta property="article:tag" content="OS">
+<meta property="article:tag" content="MIT 6.S081">
+<meta property="article:tag" content="labs">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://t1anyang.github.io/2023/02/15/MIT-6-S081-lab-traps/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MIT 6.S081 lab traps | Tianyang's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Tianyang's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://t1anyang.github.io/2023/02/15/MIT-6-S081-lab-traps/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="tianyang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Tianyang's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MIT 6.S081 lab traps
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-02-16 06:58:08 / 修改时间：16:21:13" itemprop="dateCreated datePublished" datetime="2023-02-16T06:58:08+08:00">2023-02-16</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>MIT 6.S081 lab traps 思路及解决方案</p>
+<span id="more"></span>
+<p>该课程的<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.828/2020/labs/traps.html">第四个实验</a>，要求我们探索traps的实现机制。</p>
+<h1 id="risc-v-assembly">RISC-V assembly</h1>
+<blockquote>
+<p>It will be important to understand a bit of RISC-V assembly, which you were exposed to in 6.004. There is a file user/call.c in your xv6 repo. make fs.img compiles it and also produces a readable assembly version of the program in user/call.asm.<br>
+Read the code in call.asm for the functions g, f, and main. The instruction manual for RISC-V is on the reference page. Here are some questions that you should answer (store the answers in a file answers-traps.txt):</p>
+</blockquote>
+<p>实验要求我们阅读<code>user/call.c</code>, <code>user/call.asm</code>并回答以下问题。</p>
+<p>Q: Which registers contain arguments to functions? For example, which register holds 13 in <code>main</code>'s call to <code>printf</code>?</p>
+<p>哪些寄存器保存函数的参数？例如，在<code>main</code>中对<code>printf</code>的调用中，哪个寄存器保存了13？</p>
+<p>A: 根据RISCV的<a target="_blank" rel="noopener" href="https://riscv.org/wp-content/uploads/2015/01/riscv-calling.pdf">官方文档</a>，寄存器<code>a0-a7</code>负责保存函数参数。阅读<code>call.asm</code>可以看出，在这个例子中，13被保存在寄存器a1.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">printf(&quot;%d %d\n&quot;, f(8)+1, 13);</span><br><span class="line">24:	4635                	li	a2,13</span><br><span class="line">26:	45b1                	li	a1,12</span><br><span class="line">28:	00000517          	auipc	a0,0x0</span><br><span class="line">2c:	7b850513          	addi	a0,a0,1976 # 7e0 &lt;malloc+0xea&gt;</span><br><span class="line">30:	00000097          	auipc	ra,0x0</span><br><span class="line">34:	608080e7          	jalr	1544(ra) # 638 &lt;printf&gt;</span><br></pre></td></tr></table></figure>
+<p>Q: Where is the call to function <code>f</code> in the assembly code for <code>main</code>? Where is the call to <code>g</code>? (Hint: the compiler may inline functions.)</p>
+<p>在<code>main</code>函数中哪里调用了函数<code>f</code>?哪里调用了函数<code>g</code>?</p>
+<p>A: 都没有调用。编译器对此进行了优化，直接算出了<code>f(8)+1</code>的值。</p>
+<p>Q: At what address is the function <code>printf</code> located?</p>
+<p><code>printf</code>的地址是？</p>
+<p>A: 0x1544</p>
+<p>Q: What value is in the register <code>ra</code> just after the <code>jalr</code> to <code>printf</code> in <code>main</code>?</p>
+<p>在执行完跳转到<code>printf</code>后，寄存器<code>ra</code>的值是多少？</p>
+<p>A: 0x30. 指令<code>auipc   ra,0x0</code>将当前程序位置(<code>pc</code>, 0x30)的值加上立即数(0x0)赋给寄存器<code>ra</code>(0x30)</p>
+<p>Q: Run the following code. <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="type">int</span> i = <span class="number">0x00646c72</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;H%x Wo%s&quot;</span>, <span class="number">57616</span>, &amp;i);</span><br><span class="line">```   </span><br><span class="line">What is the output? </span><br><span class="line"></span><br><span class="line">A: He110 World</span><br><span class="line"></span><br><span class="line">Q: In the following code, what is going to be printed after `<span class="string">&#x27;y=&#x27;</span>`? (note: the answer is not a specific value.) Why does this happen?</span><br><span class="line">``` C</span><br><span class="line"><span class="title function_">printf</span><span class="params">(<span class="string">&quot;x=%d y=%d&quot;</span>, <span class="number">3</span>)</span>;</span><br></pre></td></tr></table></figure></p>
+<p>A: 这是一个未定义行为(Undefined behavior), C语言标准未做出规定，结果依赖于编译器的具体实现。</p>
+<p>在xv6系统上运行该代码得到了这样的输出:</p>
+<blockquote>
+<p>3 5229</p>
+</blockquote>
+<p>编译器生成的汇编代码如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">printf(&quot;%d %d\n&quot;, 3);</span><br><span class="line">24:	458d                	li	a1,3</span><br><span class="line">26:	00000517          	auipc	a0,0x0</span><br><span class="line">2a:	7b250513          	addi	a0,a0,1970 # 7d8 &lt;malloc+0xe4&gt;</span><br><span class="line">2e:	00000097          	auipc	ra,0x0</span><br><span class="line">32:	608080e7          	jalr	1544(ra) # 636 &lt;printf&gt;</span><br></pre></td></tr></table></figure>
+<p>可以看到编译器并未对<code>printf</code>的缺失的参数作特殊处理，只是在<code>a0</code>和<code>a1</code>寄存器中存放了前两个参数就跳转到了<code>printf</code>. 进入<code>printf</code>后，<code>printf</code>认为第1个<code>%d</code>对应<code>a1</code>寄存器中的3，第2个<code>%d</code>则对应<code>a2</code>寄存器中的值。这个值是我们未指定，因此根据不同的上下文产生怎样的输出都是可能的。</p>
+<h1 id="backtrace">Backtrace</h1>
+<blockquote>
+<p>Implement a backtrace() function in kernel/printf.c. Insert a call to this function in sys_sleep, and then run bttest, which calls sys_sleep. Your output should be as follows: <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">backtrace:</span><br><span class="line">0x0000000080002cda</span><br><span class="line">0x0000000080002bb6</span><br><span class="line">0x0000000080002898</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>After bttest exit qemu. In your terminal: the addresses may be slightly different but if you run addr2line -e kernel/kernel (or riscv64-unknown-elf-addr2line -e kernel/kernel) and cut-and-paste the above addresses as follows: <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ addr2line -e kernel/kernel</span><br><span class="line">0x0000000080002de2</span><br><span class="line">0x0000000080002f4a</span><br><span class="line">0x0000000080002bfc</span><br><span class="line">Ctrl-D</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>You should see something like this:</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kernel/sysproc.c:74</span><br><span class="line">kernel/syscall.c:224</span><br><span class="line">kernel/trap.c:85</span><br></pre></td></tr></table></figure>
+<p>这部分要求我们实现backtrace功能，来查看程序执行到某一位置的调用栈。</p>
+<p>程序准备执行一个函数调用时，需要做如下工作：</p>
+<ol type="1">
+<li>设置调用函数的参数</li>
+<li>将当前的栈指针存放在栈上</li>
+<li>将调用结束后程序应当返回的地址放在栈上</li>
+</ol>
+<p>这样，当被调用的函数执行完毕即将返回时，它就可以：</p>
+<ol type="1">
+<li>在栈上找到旧的栈指针，恢复栈指针</li>
+<li>在栈上找到应当返回的地址，执行跳转</li>
+</ol>
+<p>backtrace功能需要利用这些指针所组成的链表，一级级地向上找到每个返回地址并打印出来。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">backtrace</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;backtrace:\n&quot;</span>);</span><br><span class="line">  uint64 fp = r_fp();</span><br><span class="line">  uint64 ra = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">while</span>(fp != PGROUNDUP(fp))&#123;</span><br><span class="line">    ra = *(uint64*)(fp - <span class="number">8</span>);</span><br><span class="line">    fp = *(uint64*)(fp - <span class="number">16</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%p\n&quot;</span>, ra);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>r_fp</code>函数读取<code>fp</code>寄存器的值以获得当前栈指针:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="keyword">inline</span> uint64</span><br><span class="line"><span class="title function_">r_fp</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  uint64 x;</span><br><span class="line">  <span class="keyword">asm</span> <span class="title function_">volatile</span><span class="params">(<span class="string">&quot;mv %0, s0&quot;</span> : <span class="string">&quot;=r&quot;</span> (x) )</span>;</span><br><span class="line">  <span class="keyword">return</span> x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行<code>bttest</code>得到如下输出:</p>
+<blockquote>
+<p>$ bttest backtrace:<br>
+0x0000000080002e4a<br>
+0x0000000080002cae<br>
+0x000000008000293c</p>
+</blockquote>
+<h1 id="alarm">Alarm</h1>
+<blockquote>
+<p>In this exercise you'll add a feature to xv6 that periodically alerts a process as it uses CPU time. This might be useful for compute-bound processes that want to limit how much CPU time they chew up, or for processes that want to compute but also want to take some periodic action. More generally, you'll be implementing a primitive form of user-level interrupt/fault handlers; you could use something similar to handle page faults in the application, for example. Your solution is correct if it passes alarmtest and usertests.</p>
+</blockquote>
+<p>这部分要求我们实现两个新的syscall: <code>sigalarm</code>和<code>sigreturn</code>. 用户程序可以执行<code>sigalarm(int ticks, void(*handler)())</code>来让程序在<code>ticks</code>个CPU时钟后执行指定的<code>handler()</code>, <code>handler()</code>执行结束后可以通过<code>sigreturn()</code>返回之前执行的位置继续执行。</p>
+<h2 id="sigalarm">sigalarm</h2>
+<p>我们先实现<code>sigalarm</code>. 新增syscall的方法之前的实验中出现过，不再赘述。我们需要将<code>sys_sigalarm</code>接收到的参数保存在当前进程的结构体中:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/proc.h</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">proc</span> &#123;</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">// alarm related</span></span><br><span class="line">  <span class="type">int</span> interval;</span><br><span class="line">  <span class="type">void</span> (*handler)();</span><br><span class="line">  <span class="type">int</span> ticks;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/sysproc.c</span></span><br><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_sigalarm</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> interval = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">if</span>(argint(<span class="number">0</span>, &amp;interval) &lt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  uint64 handler;</span><br><span class="line">  <span class="keyword">if</span>(argaddr(<span class="number">1</span>, &amp;handler) &lt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  <span class="keyword">return</span> sigalarm(interval, (<span class="type">void</span> (*)())handler);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/trap.c</span></span><br><span class="line">uint64 <span class="title function_">sigalarm</span><span class="params">(<span class="type">int</span> ticks, <span class="type">void</span>(*handler)())</span> &#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line">  p-&gt;interval = ticks;</span><br><span class="line">  p-&gt;handler = handler;</span><br><span class="line">  p-&gt;ticks = <span class="number">0</span>;</span><br><span class="line">  p-&gt;waiting = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>并且在每次产生timer interrupt时为进程的计数器+1, 当<code>ticks</code>大于等于<code>intervel</code>的时候，我们就应当让进程的控制流跳转到<code>handler</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/trap.c</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// handle an interrupt, exception, or system call from user space.</span></span><br><span class="line"><span class="comment">// called from trampoline.S</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">usertrap</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> which_dev = <span class="number">0</span>;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">// give up the CPU if this is a timer interrupt.</span></span><br><span class="line">  <span class="keyword">if</span>(which_dev == <span class="number">2</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span>(p-&gt;interval != <span class="number">0</span>)&#123;</span><br><span class="line">      p-&gt;ticks++;</span><br><span class="line">      <span class="keyword">if</span>(p-&gt;ticks &gt;= p-&gt;interval)&#123;</span><br><span class="line">        p-&gt;ticks = <span class="number">0</span>;</span><br><span class="line">        p-&gt;trapframe-&gt;epc = (uint64)p-&gt;handler;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    yield();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  usertrapret();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="sigreturn">sigreturn</h2>
+<p>在实现了<code>sigalarm</code>后我们再来实现<code>sigreturn</code>. <code>handler</code>会使用寄存器，为了使<code>handler</code>执行结束后能够返回之前的位置并继续正常执行，我们需要将触发了alarm时程序的寄存器状态保存下来，并在<code>sigreturn</code>中将其恢复。</p>
+<p>并且，为了防止在执行<code>handler</code>时再次触发<code>alarm</code>, 我们需要在执行<code>handler</code>的时候暂时锁定这一机制，例如将这一进程标记为正在触发alarm需要等待，并在<code>sigreturn</code>中解除锁定。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/proc.h</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">proc</span> &#123;</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">// alarm related</span></span><br><span class="line">  <span class="type">int</span> interval;</span><br><span class="line">  <span class="type">void</span> (*handler)();</span><br><span class="line">  <span class="type">int</span> ticks;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">trapframe</span> *<span class="title">saved_trapframe</span>;</span></span><br><span class="line">  <span class="type">int</span> waiting;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/sysproc.c</span></span><br><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_sigreturn</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">return</span> sigreturn();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/trap.c</span></span><br><span class="line">uint64 <span class="title function_">sigreturn</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line">  *p-&gt;trapframe = *p-&gt;saved_trapframe;</span><br><span class="line">  p-&gt;waiting = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/trap.c</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// handle an interrupt, exception, or system call from user space.</span></span><br><span class="line"><span class="comment">// called from trampoline.S</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">usertrap</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> which_dev = <span class="number">0</span>;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">// give up the CPU if this is a timer interrupt.</span></span><br><span class="line">  <span class="keyword">if</span>(which_dev == <span class="number">2</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span>(p-&gt;interval != <span class="number">0</span>)&#123;</span><br><span class="line">      p-&gt;ticks++;</span><br><span class="line">      <span class="keyword">if</span>(p-&gt;ticks &gt;= p-&gt;interval &amp;&amp; !p-&gt;waiting)&#123;</span><br><span class="line">        p-&gt;ticks = <span class="number">0</span>;</span><br><span class="line">        *p-&gt;saved_trapframe = *p-&gt;trapframe;</span><br><span class="line">        p-&gt;trapframe-&gt;epc = (uint64)p-&gt;handler;</span><br><span class="line">        p-&gt;waiting = <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    yield();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  usertrapret();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最终，我们执行<code>alarmtest</code>测试，得到了正确的结果。</p>
+<blockquote>
+<p>test0 start<br>
+....................alarm!<br>
+test0 passed<br>
+test1 start<br>
+...alarm!<br>
+...alarm!<br>
+..alarm!<br>
+...alarm!<br>
+...alarm!<br>
+....alarm!<br>
+....alarm!<br>
+..alarm!<br>
+...alarm!<br>
+....alarm!<br>
+test1 passed<br>
+test2 start<br>
+................alarm!<br>
+test2 passed</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/OS/" rel="tag"># OS</a>
+              <a href="/tags/MIT-6-S081/" rel="tag"># MIT 6.S081</a>
+              <a href="/tags/labs/" rel="tag"># labs</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/12/16/HITCTF-2022-doc-%E5%87%BA%E9%A2%98%E8%AE%B0/" rel="prev" title="HITCTF 2022 doc 出题记">
+      <i class="fa fa-chevron-left"></i> HITCTF 2022 doc 出题记
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#risc-v-assembly"><span class="nav-number">1.</span> <span class="nav-text">RISC-V assembly</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#backtrace"><span class="nav-number">2.</span> <span class="nav-text">Backtrace</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#alarm"><span class="nav-number">3.</span> <span class="nav-text">Alarm</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sigalarm"><span class="nav-number">3.1.</span> <span class="nav-text">sigalarm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sigreturn"><span class="nav-number">3.2.</span> <span class="nav-text">sigreturn</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">tianyang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tianyang</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
