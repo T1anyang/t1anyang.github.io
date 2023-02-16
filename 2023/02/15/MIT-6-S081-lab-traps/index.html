@@ -28,7 +28,7 @@
 <meta property="og:description" content="MIT 6.S081 lab traps 思路及解决方案">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-02-15T22:58:08.000Z">
-<meta property="article:modified_time" content="2023-02-16T08:21:13.725Z">
+<meta property="article:modified_time" content="2023-02-16T08:27:03.835Z">
 <meta property="article:author" content="tianyang">
 <meta property="article:tag" content="OS">
 <meta property="article:tag" content="MIT 6.S081">
@@ -177,7 +177,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2023-02-16 06:58:08 / 修改时间：16:21:13" itemprop="dateCreated datePublished" datetime="2023-02-16T06:58:08+08:00">2023-02-16</time>
+              <time title="创建时间：2023-02-16 06:58:08 / 修改时间：16:27:03" itemprop="dateCreated datePublished" datetime="2023-02-16T06:58:08+08:00">2023-02-16</time>
             </span>
 
           
@@ -213,7 +213,12 @@ Read the code in call.asm for the functions g, f, and main. The instruction manu
 <p>Q: What value is in the register <code>ra</code> just after the <code>jalr</code> to <code>printf</code> in <code>main</code>?</p>
 <p>在执行完跳转到<code>printf</code>后，寄存器<code>ra</code>的值是多少？</p>
 <p>A: 0x30. 指令<code>auipc   ra,0x0</code>将当前程序位置(<code>pc</code>, 0x30)的值加上立即数(0x0)赋给寄存器<code>ra</code>(0x30)</p>
-<p>Q: Run the following code. <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="type">int</span> i = <span class="number">0x00646c72</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;H%x Wo%s&quot;</span>, <span class="number">57616</span>, &amp;i);</span><br><span class="line">```   </span><br><span class="line">What is the output? </span><br><span class="line"></span><br><span class="line">A: He110 World</span><br><span class="line"></span><br><span class="line">Q: In the following code, what is going to be printed after `<span class="string">&#x27;y=&#x27;</span>`? (note: the answer is not a specific value.) Why does this happen?</span><br><span class="line">``` C</span><br><span class="line"><span class="title function_">printf</span><span class="params">(<span class="string">&quot;x=%d y=%d&quot;</span>, <span class="number">3</span>)</span>;</span><br></pre></td></tr></table></figure></p>
+<p>Q: Run the following code.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="type">int</span> i = <span class="number">0x00646c72</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;H%x Wo%s&quot;</span>, <span class="number">57616</span>, &amp;i);</span><br></pre></td></tr></table></figure>
+<p>What is the output?</p>
+<p>A: He110 World</p>
+<p>Q: In the following code, what is going to be printed after <code>'y='</code>? (note: the answer is not a specific value.) Why does this happen?</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;x=%d y=%d&quot;</span>, <span class="number">3</span>);</span><br></pre></td></tr></table></figure>
 <p>A: 这是一个未定义行为(Undefined behavior), C语言标准未做出规定，结果依赖于编译器的具体实现。</p>
 <p>在xv6系统上运行该代码得到了这样的输出:</p>
 <blockquote>
@@ -224,11 +229,13 @@ Read the code in call.asm for the functions g, f, and main. The instruction manu
 <p>可以看到编译器并未对<code>printf</code>的缺失的参数作特殊处理，只是在<code>a0</code>和<code>a1</code>寄存器中存放了前两个参数就跳转到了<code>printf</code>. 进入<code>printf</code>后，<code>printf</code>认为第1个<code>%d</code>对应<code>a1</code>寄存器中的3，第2个<code>%d</code>则对应<code>a2</code>寄存器中的值。这个值是我们未指定，因此根据不同的上下文产生怎样的输出都是可能的。</p>
 <h1 id="backtrace">Backtrace</h1>
 <blockquote>
-<p>Implement a backtrace() function in kernel/printf.c. Insert a call to this function in sys_sleep, and then run bttest, which calls sys_sleep. Your output should be as follows: <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">backtrace:</span><br><span class="line">0x0000000080002cda</span><br><span class="line">0x0000000080002bb6</span><br><span class="line">0x0000000080002898</span><br></pre></td></tr></table></figure></p>
+<p>Implement a backtrace() function in kernel/printf.c. Insert a call to this function in sys_sleep, and then run bttest, which calls sys_sleep. Your output should be as follows:</p>
 </blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">backtrace:</span><br><span class="line">0x0000000080002cda</span><br><span class="line">0x0000000080002bb6</span><br><span class="line">0x0000000080002898</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>After bttest exit qemu. In your terminal: the addresses may be slightly different but if you run addr2line -e kernel/kernel (or riscv64-unknown-elf-addr2line -e kernel/kernel) and cut-and-paste the above addresses as follows: <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ addr2line -e kernel/kernel</span><br><span class="line">0x0000000080002de2</span><br><span class="line">0x0000000080002f4a</span><br><span class="line">0x0000000080002bfc</span><br><span class="line">Ctrl-D</span><br></pre></td></tr></table></figure></p>
+<p>After bttest exit qemu. In your terminal: the addresses may be slightly different but if you run addr2line -e kernel/kernel (or riscv64-unknown-elf-addr2line -e kernel/kernel) and cut-and-paste the above addresses as follows:</p>
 </blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ addr2line -e kernel/kernel</span><br><span class="line">0x0000000080002de2</span><br><span class="line">0x0000000080002f4a</span><br><span class="line">0x0000000080002bfc</span><br><span class="line">Ctrl-D</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>You should see something like this:</p>
 </blockquote>
