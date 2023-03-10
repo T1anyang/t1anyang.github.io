@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"t1anyang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="MIT 6.S081 lab lazy 思路及解决方案">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT 6.S081 lab cow">
+<meta property="og:url" content="https://t1anyang.github.io/2023/03/08/MIT-6-S081-lab-cow/index.html">
+<meta property="og:site_name" content="Tianyang&#39;s blog">
+<meta property="og:description" content="MIT 6.S081 lab lazy 思路及解决方案">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-08T23:55:04.000Z">
+<meta property="article:modified_time" content="2023-03-10T02:51:08.704Z">
+<meta property="article:author" content="tianyang">
+<meta property="article:tag" content="OS">
+<meta property="article:tag" content="MIT 6.S081">
+<meta property="article:tag" content="labs">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://t1anyang.github.io/2023/03/08/MIT-6-S081-lab-cow/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MIT 6.S081 lab cow | Tianyang's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Tianyang's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://t1anyang.github.io/2023/03/08/MIT-6-S081-lab-cow/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="tianyang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Tianyang's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MIT 6.S081 lab cow
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-03-09 07:55:04" itemprop="dateCreated datePublished" datetime="2023-03-09T07:55:04+08:00">2023-03-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-10 10:51:08" itemprop="dateModified" datetime="2023-03-10T10:51:08+08:00">2023-03-10</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>MIT 6.S081 lab lazy 思路及解决方案</p>
+<span id="more"></span>
+<p>该课程的<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.828/2020/labs/cow.html">第四个实验</a>，要求实现lazy allocation机制。</p>
+<p>您可以在<a target="_blank" rel="noopener" href="https://github.com/T1anyang/MIT-6.S081-2020-labs-solution">我的github仓库</a>中找到我的完整解决方案。</p>
+<h1 id="为什么要copy-on-write">为什么要copy-on-write</h1>
+<p>本次实验要求我们实现fork的copy-on-write机制。我们知道，fork出的进程是由父进程复制而来。在xv6原本的实现中，为了保证父子进程内存的一致，<code>fork()</code>中将父进程拥有的每一页物理内存的内容复制到一个新的页上映射给子进程。如果父进程有n个页，那么系统就会调用n次<code>kalloc</code>获取新的物理页，并通过调用n次<code>memset</code>来复制内容。</p>
+<p>这些操作一定是必要的吗？例如，代码段所在的页应当是只读的，完全可以共享。又例如，我们考虑如下场景：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="type">int</span> pid = fork();</span><br><span class="line"><span class="keyword">if</span>(pid == <span class="number">0</span>)&#123;</span><br><span class="line">    exec(....);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="comment">// do something</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>fork为子进程复制了很多页表，但子进程并不需要它们。子进程即将调用<code>exec</code>, 把这些页都丢掉。</p>
+<p>于是我们自然可以想到一种优化思路：在fork时并不实际地复制父进程中的这些页，而是将子进程的虚拟地址也映射到这些物理地址上，并取消该页的写权限。只有当其中一个进程需要写内容时，为了保证不影响其他进程，才新建一个页表并复制内容，即copy-on-write。</p>
+<h1 id="实现">实现</h1>
+<h2 id="一些实现问题">一些实现问题</h2>
+<p>为了进行copy-on-write的优化，我们需要解决这些问题：</p>
+<ol type="1">
+<li>cow机制允许我们将若干进程的虚拟地址映射到同一物理地址。在释放这些页时，如何确保这个页没有被其他进程使用？</li>
+<li>当触发copy-on-write时，如果这个物理页是被某一进程独占的，我们不应当新建页，否则将会导致旧页无法被释放掉。对此我们如何检测？</li>
+<li>在用户态程序尝试在不具备写权限上的地址上写时，会触发中断。我们如何区分这个地址不能写的原因是cow机制下fork取消了它的写权限，还是它本来就是不能写的？</li>
+</ol>
+<p>对于问题1 2, 我们可以添加一个引用计数机制。每次kalloc一个新的页时就记录下其引用计数为1, 每次fork都要将涉及到页的引用加一，触发copy-on-write时则要将其减一，kfree只有在页的引用计数为1时才会将该页重新处理成空闲页。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/kalloc.c</span></span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">spinlock</span> <span class="title">lock</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">freelist</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">spinlock</span> <span class="title">countslock</span>;</span></span><br><span class="line">  uint8* counts;</span><br><span class="line">&#125; kmem;</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">freerange</span><span class="params">(<span class="type">void</span> *pa_start, <span class="type">void</span> *pa_end)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">char</span> *p;</span><br><span class="line">  p = (<span class="type">char</span>*)PGROUNDUP((uint64)pa_start);</span><br><span class="line">  <span class="keyword">for</span>(; p + PGSIZE &lt;= (<span class="type">char</span>*)pa_end; p += PGSIZE)&#123;</span><br><span class="line">    uint32 idx = pa2idx((uint64)p);</span><br><span class="line">    kmem.counts[idx] = <span class="number">1</span>;</span><br><span class="line">    kfree(p);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Free the page of physical memory pointed at by v,</span></span><br><span class="line"><span class="comment">// which normally should have been returned by a</span></span><br><span class="line"><span class="comment">// call to kalloc().  (The exception is when</span></span><br><span class="line"><span class="comment">// initializing the allocator; see kinit above.)</span></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">kfree</span><span class="params">(<span class="type">void</span> *pa)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">r</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(((uint64)pa % PGSIZE) != <span class="number">0</span> || (uint64)pa &lt; KALLOCBASE || (uint64)pa &gt;= PHYSTOP)</span><br><span class="line">    panic(<span class="string">&quot;kfree&quot;</span>);</span><br><span class="line"></span><br><span class="line">  uint32 idx = pa2idx((uint64)pa);</span><br><span class="line">  <span class="keyword">if</span>(idx &gt;= KALLOCBASE - KERNBASE)</span><br><span class="line">    panic(<span class="string">&quot;kfree&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span>(!kmem.counts[idx])</span><br><span class="line">    panic(<span class="string">&quot;kfree&quot;</span>);</span><br><span class="line">  acquire(&amp;kmem.lock);</span><br><span class="line">  kmem.counts[idx]--;</span><br><span class="line">  release(&amp;kmem.lock);</span><br><span class="line">  <span class="keyword">if</span>(!kmem.counts[idx])&#123;</span><br><span class="line">    <span class="comment">// Fill with junk to catch dangling refs.</span></span><br><span class="line">    <span class="built_in">memset</span>(pa, <span class="number">1</span>, PGSIZE);</span><br><span class="line"></span><br><span class="line">    r = (<span class="keyword">struct</span> run*)pa;</span><br><span class="line"></span><br><span class="line">    acquire(&amp;kmem.lock);</span><br><span class="line">    r-&gt;next = kmem.freelist;</span><br><span class="line">    kmem.freelist = r;</span><br><span class="line">    release(&amp;kmem.lock);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Allocate one 4096-byte page of physical memory.</span></span><br><span class="line"><span class="comment">// Returns a pointer that the kernel can use.</span></span><br><span class="line"><span class="comment">// Returns 0 if the memory cannot be allocated.</span></span><br><span class="line"><span class="type">void</span> *</span><br><span class="line"><span class="title function_">kalloc</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">r</span>;</span></span><br><span class="line"></span><br><span class="line">  acquire(&amp;kmem.lock);</span><br><span class="line">  r = kmem.freelist;</span><br><span class="line">  <span class="keyword">if</span>(r)</span><br><span class="line">    kmem.freelist = r-&gt;next;</span><br><span class="line">  release(&amp;kmem.lock);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(r)&#123;</span><br><span class="line">    <span class="built_in">memset</span>((<span class="type">char</span>*)r, <span class="number">5</span>, PGSIZE); <span class="comment">// fill with junk</span></span><br><span class="line">    uint32 idx = pa2idx((uint64)r);</span><br><span class="line">    kmem.counts[idx] = <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> (<span class="type">void</span>*)r;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这些计数放在哪里呢？注意到<code>membase.h</code>定义了</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// the kernel expects there to be RAM</span></span><br><span class="line"><span class="comment">// for use by the kernel and user pages</span></span><br><span class="line"><span class="comment">// from physical address 0x80000000 to PHYSTOP.</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> KERNBASE 0x80000000L</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PHYSTOP (KERNBASE + 128*1024*1024)</span></span><br></pre></td></tr></table></figure>
+<p>阅读<code>kalloc.c</code>, 我们知道<code>kalloc</code>分配的物理页就位于<code>KERNBASE</code>到<code>PHYSTOP</code>之间。那么至多会有<code>(KERNBASE-PHYSTOP)/PGSIZE=32768</code>个页。如果规定每个页最多被引用255次，对每个页我们用1byte来记录其引用数，那么我们需要32768字节也就是8个页来存储这些信息。我们不妨从这段空间拿8个页来记录这些信息。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/kalloc.c</span></span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">char</span> end[]; <span class="comment">// first address after kernel.</span></span><br><span class="line">                   <span class="comment">// defined by kernel.ld.</span></span><br><span class="line"></span><br><span class="line">uint64 KALLOCBASE;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">run</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">next</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">spinlock</span> <span class="title">lock</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">freelist</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">spinlock</span> <span class="title">countslock</span>;</span></span><br><span class="line">  uint8* counts;</span><br><span class="line">&#125; kmem;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">kinit</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  initlock(&amp;kmem.lock, <span class="string">&quot;kmem&quot;</span>);</span><br><span class="line">  initlock(&amp;kmem.countslock, <span class="string">&quot;kmem counts&quot;</span>);</span><br><span class="line">  KALLOCBASE = (uint64)end + <span class="number">8</span>*PGSIZE;</span><br><span class="line">  kmem.counts = (uint8*)end;</span><br><span class="line">  freerange((<span class="type">void</span>*)KALLOCBASE, (<span class="type">void</span>*)PHYSTOP);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">uint32</span><br><span class="line"><span class="title function_">pa2idx</span><span class="params">(uint64 pa)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">return</span> (pa - KALLOCBASE) / PGSIZE;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+<p>对于问题3, 我们注意到PTE中还有很多没有使用的flag位，我们不妨拿一位来记录其是否是cow机制导致其不可写。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/def.h</span></span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PTE_V (1L &lt;&lt; 0) <span class="comment">// valid</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PTE_R (1L &lt;&lt; 1)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PTE_W (1L &lt;&lt; 2)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PTE_X (1L &lt;&lt; 3)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PTE_U (1L <span class="string">&lt;&lt; 4) // 1 -&gt;</span> user can access</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PTE_FW (1L <span class="string">&lt;&lt; 5) // 1 -&gt;</span> should be writeable, but can not write because of fork</span></span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+<p>至此，我们就可以着手实现cow机制了。</p>
+<h2 id="cow机制实现">cow机制实现</h2>
+<p>我们首先包装增加/减少引用计数的方法： <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/kalloc.c</span></span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">kaddpacount</span><span class="params">(uint64 pa)</span></span><br><span class="line">&#123;</span><br><span class="line">  uint32 idx = pa2idx(pa);</span><br><span class="line">  <span class="keyword">if</span>(idx &gt;= KALLOCBASE - (uint64)end)</span><br><span class="line">    panic(<span class="string">&quot;kaddpacount&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span>(kmem.counts[idx] == <span class="number">0xff</span> || kmem.counts[idx] == <span class="number">0</span>)&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  kmem.counts[idx]++;</span><br><span class="line">  <span class="keyword">return</span> kmem.counts[idx];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">ksubpacount</span><span class="params">(uint64 pa)</span></span><br><span class="line">&#123;</span><br><span class="line">  uint32 idx = pa2idx(pa);</span><br><span class="line">  <span class="keyword">if</span>(idx &gt;= KALLOCBASE - (uint64)end)</span><br><span class="line">    panic(<span class="string">&quot;kaddpacount&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span>(kmem.counts[idx] &lt;= <span class="number">1</span>)&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  kmem.counts[idx]--;</span><br><span class="line">  <span class="keyword">return</span> kmem.counts[idx];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">uint8</span><br><span class="line"><span class="title function_">kpacount</span><span class="params">(uint64 pa)</span></span><br><span class="line">&#123;</span><br><span class="line">  uint32 idx = pa2idx(pa);</span><br><span class="line">  <span class="keyword">if</span>(idx &gt;= KALLOCBASE - (uint64)end)</span><br><span class="line">    panic(<span class="string">&quot;kaddpacount&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> kmem.counts[idx];</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure></p>
+<p>原本的<code>fork()</code>调用了<code>uvmcopy()</code>来复制物理页。于是我们修改uvmcopy的实现。对于父进程的每一个物理页，我们增加其引用计数，根据写权限设置其FW标记位，再取消其写权限。然后我们将子进程的虚拟地址也映射到这个物理页上。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Given a parent process&#x27;s page table, copy</span></span><br><span class="line"><span class="comment">// its memory into a child&#x27;s page table.</span></span><br><span class="line"><span class="comment">// Copies both the page table and the</span></span><br><span class="line"><span class="comment">// physical memory.</span></span><br><span class="line"><span class="comment">// returns 0 on success, -1 on failure.</span></span><br><span class="line"><span class="comment">// frees any allocated pages on failure.</span></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">uvmcopy</span><span class="params">(<span class="type">pagetable_t</span> old, <span class="type">pagetable_t</span> new, uint64 sz)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">pte_t</span> *pte;</span><br><span class="line">  uint64 pa, i;</span><br><span class="line">  uint flags;</span><br><span class="line">  <span class="comment">// char *mem;</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; sz; i += PGSIZE)&#123;</span><br><span class="line">    <span class="keyword">if</span>((pte = walk(old, i, <span class="number">0</span>)) == <span class="number">0</span>)</span><br><span class="line">      panic(<span class="string">&quot;uvmcopy: pte should exist&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span>((*pte &amp; PTE_V) == <span class="number">0</span>)</span><br><span class="line">      panic(<span class="string">&quot;uvmcopy: page not present&quot;</span>);</span><br><span class="line">    pa = PTE2PA(*pte);</span><br><span class="line">    kacquirelock();</span><br><span class="line">    <span class="type">int</span> ret = kaddpacount(pa);</span><br><span class="line">    kreleaselock();</span><br><span class="line">    <span class="keyword">if</span>(ret == <span class="number">0</span>)&#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;add page count failed\n&quot;</span>);</span><br><span class="line">      <span class="keyword">goto</span> err;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(*pte &amp; PTE_W)&#123;</span><br><span class="line">      *pte |= PTE_FW;</span><br><span class="line">    &#125;</span><br><span class="line">    *pte &amp;= (~PTE_W);</span><br><span class="line">    flags = PTE_FLAGS(*pte);</span><br><span class="line">    <span class="comment">// if((mem = kalloc()) == 0)</span></span><br><span class="line">    <span class="comment">//   goto err;</span></span><br><span class="line">    <span class="comment">// memmove(mem, (char*)pa, PGSIZE);</span></span><br><span class="line">    <span class="keyword">if</span>(mappages(new, i, PGSIZE, (uint64)pa, flags) != <span class="number">0</span>)&#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;mappages failed&quot;</span>);</span><br><span class="line">      <span class="comment">// kfree(mem);</span></span><br><span class="line">      <span class="keyword">goto</span> err;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"> err:</span><br><span class="line">  uvmunmap(new, <span class="number">0</span>, i / PGSIZE, <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+<p>接下来我们要实现真正的copy过程。当用户态程序尝试向不可写的地址写入时，就会触发中断机制来到<code>usertrap()</code>函数。此时，scause寄存器中保存的中断号会是12或15. 此时我们需要识别出由于cow机制而产生的中断，并进行正确处理。</p>
+<p>在当前的xv6中，中断号是12或15的中断，原因分为三种：</p>
+<ol type="1">
+<li>用户态程序尝试访问的虚拟地址并不存在</li>
+<li>虚拟地址是只读的</li>
+<li>虚拟地址原本可写，但由于cow机制被取消了写权限</li>
+</ol>
+<p>对于1, 我们可以检查虚拟地址是否大于进程占用的内存大小.对于2和3，我们在fork()时为涉及到的pte新增了一个flag项以示区分。</p>
+<p>确定了中断是由cow机制而产生的之后，我们需要做的处理也很简单。对于一个物理地址，我们去检查它对应的引用计数。如果引用计数只剩一个，那我们就将这个页重新标记为可写；如果引用计数多于1，那我们就新建分配一个物理页，将原来的页的内容复制到新的页上，再将新的页映射给当前进程。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/trap.c</span></span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// handle an interrupt, exception, or system call from user space.</span></span><br><span class="line"><span class="comment">// called from trampoline.S</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">usertrap</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">if</span>(r_scause() == <span class="number">8</span>)&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span>(r_scause() == <span class="number">0xc</span> || r_scause() == <span class="number">0xf</span>)&#123;</span><br><span class="line">    uint64 va = PGROUNDDOWN(r_stval());</span><br><span class="line">    <span class="keyword">if</span>(va &gt;= p-&gt;sz)&#123;</span><br><span class="line">      p-&gt;killed = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">      <span class="type">pte_t</span> *pte = walk(p-&gt;pagetable, va, <span class="number">0</span>);</span><br><span class="line">      uint64 pa = PTE2PA(*pte);</span><br><span class="line">      <span class="keyword">if</span>(!(*pte &amp; PTE_FW))&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;write on read-only addr: %p\n&quot;</span>, va);</span><br><span class="line">        p-&gt;killed = <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span>&#123;</span><br><span class="line">        kacquirelock();</span><br><span class="line">        uint8 count = kpacount(pa);</span><br><span class="line">        <span class="keyword">if</span>(count == <span class="number">1</span>)&#123;</span><br><span class="line">          *pte |= PTE_W;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(count &gt; <span class="number">1</span>)&#123;</span><br><span class="line">          <span class="keyword">if</span>(uvmrealloc(p-&gt;pagetable, va, pte) == <span class="number">0</span>)&#123;</span><br><span class="line">            p-&gt;killed = <span class="number">1</span>;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">          panic(<span class="string">&quot;trap: invalid count&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        kreleaselock();</span><br><span class="line">      &#125;      </span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span>((which_dev = devintr()) != <span class="number">0</span>)&#123;</span><br><span class="line">    <span class="comment">// ok</span></span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;usertrap(): unexpected scause %p pid=%d\n&quot;</span>, r_scause(), p-&gt;pid);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;            sepc=%p stval=%p\n&quot;</span>, r_sepc(), r_stval());</span><br><span class="line">    p-&gt;killed = <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(p-&gt;killed)</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// give up the CPU if this is a timer interrupt.</span></span><br><span class="line">  <span class="keyword">if</span>(which_dev == <span class="number">2</span>)</span><br><span class="line">    yield();</span><br><span class="line"></span><br><span class="line">  usertrapret();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/vm.c</span></span><br><span class="line"><span class="comment">// re-alloc a new page for va</span></span><br><span class="line"><span class="comment">// used for copy-on-write fork</span></span><br><span class="line"><span class="type">void</span>*</span><br><span class="line"><span class="title function_">uvmrealloc</span><span class="params">(<span class="type">pagetable_t</span> pagetable, uint64 va, <span class="type">pte_t</span> *pte)</span></span><br><span class="line">&#123;</span><br><span class="line">  uint64 pa = PTE2PA(*pte);</span><br><span class="line">  <span class="type">void</span> *mem = kalloc();</span><br><span class="line">  <span class="keyword">if</span>(!mem)&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  *pte = PA2PTE(mem) | PTE_FLAGS(*pte) | PTE_W;</span><br><span class="line">  <span class="keyword">if</span>(ksubpacount(pa) == <span class="number">-1</span>)&#123;</span><br><span class="line">    panic(<span class="string">&quot;uvmrealloc&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  memmove(mem, (<span class="type">void</span> *)pa, PGSIZE);</span><br><span class="line">  <span class="keyword">return</span> mem;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="内核态中的cow判断">内核态中的cow判断</h2>
+<p>上一节中我们实现了用户态产生中断时的cow机制。但程序在内核态时也会产生需要对用户态下虚拟地址写的情况，因此也要对cow机制进行类似的额外检查和处理。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/vm.c</span></span><br><span class="line"><span class="comment">// Copy from kernel to user.</span></span><br><span class="line"><span class="comment">// Copy len bytes from src to virtual address dstva in a given page table.</span></span><br><span class="line"><span class="comment">// Return 0 on success, -1 on error.</span></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">copyout</span><span class="params">(<span class="type">pagetable_t</span> pagetable, uint64 dstva, <span class="type">char</span> *src, uint64 len)</span></span><br><span class="line">&#123;</span><br><span class="line">  uint64 n, va0, pa0;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span>* <span class="title">p</span> =</span> myproc();</span><br><span class="line">  <span class="keyword">while</span>(len &gt; <span class="number">0</span>)&#123;</span><br><span class="line">    va0 = PGROUNDDOWN(dstva);</span><br><span class="line">    <span class="keyword">if</span>(va0 &gt;= MAXVA)</span><br><span class="line">      <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    <span class="type">pte_t</span>* pte = walk(pagetable, va0, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(pte == <span class="number">0</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    pa0 = PTE2PA(*pte);</span><br><span class="line">    <span class="keyword">if</span>(pa0 == <span class="number">0</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">if</span>(!(*pte &amp; PTE_W))&#123;</span><br><span class="line">      <span class="keyword">if</span>(dstva &gt;= p-&gt;sz) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span>(!(*pte &amp; PTE_FW))&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;write on read-only addr: %p\n&quot;</span>, va0);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span>&#123;</span><br><span class="line">        kacquirelock();</span><br><span class="line">        uint8 count = kpacount(pa0);</span><br><span class="line">        <span class="keyword">if</span>(count == <span class="number">1</span>)&#123;</span><br><span class="line">          *pte |= PTE_W;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(count &gt; <span class="number">1</span>)&#123;</span><br><span class="line">          <span class="comment">// printf(&quot;count %d pa %p\n&quot;, count, pa0);</span></span><br><span class="line">          <span class="keyword">if</span>((pa0 = (uint64)uvmrealloc(pagetable, va0, pte)) == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">          panic(<span class="string">&quot;copyout: invalid pa&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        kreleaselock();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    n = PGSIZE - (dstva - va0);</span><br><span class="line">    <span class="keyword">if</span>(n &gt; len)</span><br><span class="line">      n = len;</span><br><span class="line">    memmove((<span class="type">void</span> *)(pa0 + (dstva - va0)), src, n);</span><br><span class="line"></span><br><span class="line">    len -= n;</span><br><span class="line">    src += n;</span><br><span class="line">    dstva = va0 + PGSIZE;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="多进程安全">多进程安全</h2>
+<p>做完上述工作并不意味着大功告成。此时，如果我们去运行<code>usertests</code>, 则会触发一些绝不应发生的现象从而导致panic, 例如<code>kfree()</code>一个引用计数为0的块。</p>
+<p>类似于我们开发多线程程序时要时刻小心线程间的安全一样，<code>fork()</code>后产生的两个进程共享了一些物理页，并且它们在逻辑上是并行的，我们不能假定他们运行的先后顺序。那么我们自然也需要考虑进程之间脏读脏写的情况。</p>
+<p>考虑如下两个情况：</p>
+<ol type="1">
+<li><p>进程a尝试写一个共享的物理页触发了中断，a检查了当前物理页的引用为2; 此时操作系统换到进程b执行，b也尝试写该物理页，b同样得知该物理页引用为2。之后，他们分别继续执行，都将该物理页的引用计数减一，使得该页的引用计数变为0, 进入了非法状态；</p></li>
+<li><p>一物理页由若干进程共享，其引用计数为254. 引用了该页的进程a尝试fork, 得知了该页引用计数为254; 此时操作系统切换到同样引用了该页的进程b执行，b也尝试fork, 得知该页引用计数为254. a和b都判断可以继续增加其引用计数，a通过fork将其引用计数加至255, 之后b通过fork增加其引用计数产生了整数溢出。</p></li>
+</ol>
+<p>因此，我们有必要对一个进程读取物理页引用计数再到增加/减少引用计数的过程加锁。您可能已经注意到了前面的代码中包含了对<code>kacquirelock()</code>和<code>kreleaselock()</code>的引用，他们的实现如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/kalloc.c</span></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">kacquirelock</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  acquire(&amp;kmem.countslock);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">kreleaselock</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  release(&amp;kmem.countslock);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>至此，我们真正地大功告成了。运行cowtest和usertests总是可以通过全部测试。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/OS/" rel="tag"># OS</a>
+              <a href="/tags/MIT-6-S081/" rel="tag"># MIT 6.S081</a>
+              <a href="/tags/labs/" rel="tag"># labs</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/24/MIT-6-S081-lab-lazy/" rel="prev" title="MIT 6.S081 lab lazy">
+      <i class="fa fa-chevron-left"></i> MIT 6.S081 lab lazy
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81copy-on-write"><span class="nav-number">1.</span> <span class="nav-text">为什么要copy-on-write</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%AE%9E%E7%8E%B0%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.</span> <span class="nav-text">一些实现问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cow%E6%9C%BA%E5%88%B6%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.2.</span> <span class="nav-text">cow机制实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E6%A0%B8%E6%80%81%E4%B8%AD%E7%9A%84cow%E5%88%A4%E6%96%AD"><span class="nav-number">2.3.</span> <span class="nav-text">内核态中的cow判断</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">2.4.</span> <span class="nav-text">多进程安全</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">tianyang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tianyang</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
