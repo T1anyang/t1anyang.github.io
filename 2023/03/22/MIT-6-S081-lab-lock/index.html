@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"t1anyang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="MIT 6.S081 lab lock 思路及解决方案">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT 6.S081 lab lock">
+<meta property="og:url" content="https://t1anyang.github.io/2023/03/22/MIT-6-S081-lab-lock/index.html">
+<meta property="og:site_name" content="Tianyang&#39;s blog">
+<meta property="og:description" content="MIT 6.S081 lab lock 思路及解决方案">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-22T21:44:42.000Z">
+<meta property="article:modified_time" content="2023-03-23T07:17:20.896Z">
+<meta property="article:author" content="tianyang">
+<meta property="article:tag" content="OS">
+<meta property="article:tag" content="MIT 6.S081">
+<meta property="article:tag" content="labs">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://t1anyang.github.io/2023/03/22/MIT-6-S081-lab-lock/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MIT 6.S081 lab lock | Tianyang's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Tianyang's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://t1anyang.github.io/2023/03/22/MIT-6-S081-lab-lock/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="tianyang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Tianyang's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MIT 6.S081 lab lock
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-23 05:44:42 / 修改时间：15:17:20" itemprop="dateCreated datePublished" datetime="2023-03-23T05:44:42+08:00">2023-03-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>MIT 6.S081 lab lock 思路及解决方案</p>
+<span id="more"></span>
+<p>该课程的<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.828/2020/labs/lock.html">第八个实验</a>，要求实现lazy allocation机制。</p>
+<p>您可以在<a target="_blank" rel="noopener" href="https://github.com/T1anyang/MIT-6.S081-2020-labs-solution">我的github仓库</a>中找到我的完整解决方案。</p>
+<h1 id="前言">前言</h1>
+<p>并行地处理任务时对资源的管理是一个复杂的问题。不幸的是，任务处理者(进程/线程/打工人/...)往往需要独占一些资源来进行任务的处理，为了解决对资源独占的需求，我们引入了锁的机制，对特定的资源加锁从而阻止其他的处理者访问这一资源。但加锁无疑会引入不可忽视的开销。资源被占用时，其他的处理者想访问该资源就不得不等待。由此，锁的使用无疑是需要谨慎、需要细粒度的。</p>
+<p>这里锁的粒度可以是资源的粒度：例如，一个人去上厕所，应该把隔间的门锁上以阻止他人进来，而不是把整间厕所都锁上；也可以是时间的粒度：如果厕所外大排长龙而厕所里的人在兴致勃勃地刷手机就不好了。使用锁的指导原则在现实世界和计算机世界都是如此。这次实验就要求我们来解决xv6系统中一些锁粒度过大的问题。</p>
+<h1 id="memory-allocator">Memory allocator</h1>
+<p>xv6支持多核CPU. 但显然内存没有什么“多核”，一块空闲的内存可以被所有CPU申请到。当前的xv6中，所有空闲内存页由一个链表串起来，申请内存就是把链表头指向的内存拿走，释放内存就是把内存页链回链表头。每次申请/释放内存都需要对这个链表加锁，于是同一时间只能有一个进程在申请内存。但整个xv6系统中大致有3万多页内存，我们申请一页内存为什么一定要阻止其他的上万页内存被申请呢？实验要求我们对此进行优化。</p>
+<p>实验建议我们采取这样的优化方案：对每一个CPU核，我们都维护一个空闲页链表。在申请时，我们首先去对应的CPU核对应的链表尝试申请。如果申请不到，那么就去向别的核“借”一些空闲的内存页。那么我们的具体实现就要解决如下三个问题：</p>
+<ol type="1">
+<li>在初始化时，如何向这些链表分配所有空闲的物理页？</li>
+<li>在向其他核借空闲内存页时，向哪个核借？一次借多少？</li>
+<li>在释放内存时，是否需要把借来的页还回去？</li>
+</ol>
+<p>对于问题1，初始化链表的函数<code>kinit</code>在<code>kernel/main.c</code>中由且仅由CPU0调用。在CPU0初始化时，似乎并不能感知一共存在多少个CPU核，我们唯一确定的是一定存在一个CPU0. 因此，初始化时，我们不妨把所有物理页暂且都分给CPU0.</p>
+<p>对于问题2，CPU核们按0-8的顺序依次初始化。由于CPU0初始化后已经持有了所有的空闲内存页，其他的CPU在借空闲页时，不妨从<code>cpuid - 1</code>开始一直向前借去。CPU1初始化时优先向CPU0借空闲页，CPU2初始化时优先向CPU1借，以此类推。借多少呢？考虑到开始时所有的空闲页都被CPU0占据，我们不妨下手狠一些。我采取的策略如下：</p>
+<ul>
+<li>如果目标CPU拥有2048个以上的页，那么拿走其中的一半；</li>
+<li>如果目标CPU拥有1024~2048个CPU页，那么拿走1024个；</li>
+<li>如果目标CPU拥有不足1024个页，那就全拿走。</li>
+</ul>
+<p>对于问题3，由于这些物理页初始都是CPU0的，而其他CPU并不拥有空闲页，因此CPU在释放内存页时当然应该把空闲内存页据为己有。</p>
+<p>下面我们来看具体的实现。</p>
+<p>首先是新的<code>kmem</code>数据结构。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">spinlock</span> <span class="title">lock</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">freelist</span>;</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> freenum;</span><br><span class="line">&#125; kmem[NCPU];</span><br></pre></td></tr></table></figure>
+<p>相比于旧的<code>kmem</code>, 我们在结构体里新加入了<code>freenum</code>字段来标识链表中空闲页的个数，因为在向其他CPU借空闲页时需要得知目标链表的长度。</p>
+<p>对于<code>kinit</code>函数，我们为<code>kmem</code>数组里每个锁都初始化。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">kinit</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; NCPU; i++)&#123;</span><br><span class="line">    initlock(&amp;kmem[i].lock, <span class="string">&quot;kmem&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  freerange(end, (<span class="type">void</span>*)PHYSTOP);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>kfree</code>也比较简单。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">kfree</span><span class="params">(<span class="type">void</span> *pa)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">r</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(((uint64)pa % PGSIZE) != <span class="number">0</span> || (<span class="type">char</span>*)pa &lt; end || (uint64)pa &gt;= PHYSTOP)</span><br><span class="line">    panic(<span class="string">&quot;kfree&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Fill with junk to catch dangling refs.</span></span><br><span class="line">  <span class="built_in">memset</span>(pa, <span class="number">1</span>, PGSIZE);</span><br><span class="line"></span><br><span class="line">  r = (<span class="keyword">struct</span> run*)pa;</span><br><span class="line">  push_off();</span><br><span class="line">  <span class="type">int</span> cpu = cpuid();</span><br><span class="line">  pop_off();</span><br><span class="line">  acquire(&amp;kmem[cpu].lock);</span><br><span class="line">  r-&gt;next = kmem[cpu].freelist;</span><br><span class="line">  kmem[cpu].freelist = r;</span><br><span class="line">  kmem[cpu].freenum++;</span><br><span class="line">  release(&amp;kmem[cpu].lock);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>kalloc</code>函数则较为复杂。我们需要处理当前CPU核没有空闲页时的逻辑。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> *</span><br><span class="line"><span class="title function_">kalloc</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">r</span>;</span></span><br><span class="line"></span><br><span class="line">  push_off();</span><br><span class="line">  <span class="type">int</span> cpu = cpuid();</span><br><span class="line">  pop_off();</span><br><span class="line">  acquire(&amp;kmem[cpu].lock);</span><br><span class="line">  r = kmem[cpu].freelist;</span><br><span class="line">  <span class="keyword">if</span>(r)&#123;</span><br><span class="line">    kmem[cpu].freelist = r-&gt;next;</span><br><span class="line">    kmem[cpu].freenum--;</span><br><span class="line">  &#125;</span><br><span class="line">  release(&amp;kmem[cpu].lock);</span><br><span class="line"></span><br><span class="line">  <span class="type">int</span> target = (cpu + <span class="number">7</span>) % NCPU;</span><br><span class="line">  <span class="keyword">while</span>(!r)&#123;</span><br><span class="line">    <span class="keyword">if</span>(target == cpu)&#123;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    acquire(&amp;kmem[target].lock);</span><br><span class="line">    <span class="type">int</span> stealnum = kmem[target].freenum &gt; <span class="number">2048</span>? kmem[target].freenum/<span class="number">2</span> : kmem[target].freenum &gt; <span class="number">1024</span>? <span class="number">1024</span>: kmem[target].freenum;</span><br><span class="line">    <span class="keyword">if</span>(stealnum)&#123;</span><br><span class="line">      <span class="class"><span class="keyword">struct</span> <span class="title">run</span>* <span class="title">tmp</span> =</span> kmem[target].freelist;</span><br><span class="line">      <span class="class"><span class="keyword">struct</span> <span class="title">run</span>* <span class="title">prev</span> =</span> <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; stealnum; i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(!tmp)&#123;</span><br><span class="line">          panic(<span class="string">&quot;kalloc&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        prev = tmp;</span><br><span class="line">        tmp = tmp-&gt;next;</span><br><span class="line">      &#125;</span><br><span class="line">      r = kmem[target].freelist;</span><br><span class="line">      kmem[target].freelist = tmp;</span><br><span class="line">      kmem[target].freenum -= stealnum;</span><br><span class="line">      release(&amp;kmem[target].lock);</span><br><span class="line">      acquire(&amp;kmem[cpu].lock);</span><br><span class="line">      prev-&gt;next = kmem[cpu].freelist;</span><br><span class="line">      kmem[cpu].freelist = r-&gt;next;</span><br><span class="line">      kmem[cpu].freenum += stealnum - <span class="number">1</span>;</span><br><span class="line">      release(&amp;kmem[cpu].lock);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">      release(&amp;kmem[target].lock);</span><br><span class="line">    &#125;</span><br><span class="line">    target--;</span><br><span class="line">    <span class="keyword">if</span>(target &lt; <span class="number">0</span>)&#123;</span><br><span class="line">      target += NCPU;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(r)</span><br><span class="line">    <span class="built_in">memset</span>((<span class="type">char</span>*)r, <span class="number">5</span>, PGSIZE); <span class="comment">// fill with junk</span></span><br><span class="line">  <span class="keyword">return</span> (<span class="type">void</span>*)r;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>kalloc</code>的实现涉及到多个锁，因此很容易写出死锁。例如，有些朋友的实现中，在<code>kalloc</code>全程对<code>kmem[cpu]</code>加锁，这就会产生死锁问题。例如，当存在两个CPU核时，考虑物理内存已耗尽的情况下按如下顺序发生的事情：</p>
+<ol type="1">
+<li>CPU0执行kalloc，对kmem[0].lock加锁</li>
+<li>CPU1执行kalloc，对kmem[1].lock加锁</li>
+<li>CPU0尝试向CPU1借物理内存页，尝试获得kmem[1].lock的锁</li>
+<li>CPU1尝试向CPU0借物理内存页，尝试获得kmem[0].lock的锁</li>
+</ol>
+<p>此时发生死锁。因此，在我的实现中，在确定了当前CPU没有空闲链表后，我们就及时将锁释放掉；在向其他的CPU借到了空闲页之后，我们再申请当前CPU的锁，把这些空闲页链到自己的链表上。</p>
+<p>更一般地，一个进程持有着一个锁的同时申请其他锁，显然是更容易产生死锁的。在暂时不需要资源时及时将锁释放，也有助于减少死锁。</p>
+<h1 id="buffer-cache">Buffer cache</h1>
+<p>xv6磁盘的缓冲管理同样存在上一节所提到的问题，实验要求我们对其进行改造。实验建议我们采用哈希表进行管理。注意到每个<code>buf</code>都有一个<code>blockno</code>字段，我们用<code>blockno</code>除以7的余数作为哈希值。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> NBUCKET 7</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">  <span class="comment">// struct spinlock lock;</span></span><br><span class="line">  <span class="comment">// Linked list of all buffers, through prev/next.</span></span><br><span class="line">  <span class="comment">// Sorted by how recently the buffer was used.</span></span><br><span class="line">  <span class="comment">// head.next is most recent, head.prev is least.</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">buf</span> <span class="title">heads</span>[<span class="title">NBUCKET</span>];</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">buf</span> <span class="title">buckets</span>[<span class="title">NBUCKET</span>][<span class="title">NBUF</span>];</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">spinlock</span> <span class="title">bucketlocks</span>[<span class="title">NBUCKET</span>];</span> <span class="comment">// lock per bucket</span></span><br><span class="line">&#125; bcache;</span><br></pre></td></tr></table></figure>
+<p>并修改<code>binit</code>, <code>bread</code>, <code>brelse</code>, <code>bpin</code>, <code>bunpin</code>进行修改。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">binit</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">buf</span> *<span class="title">b</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// initlock(&amp;bcache.lock, &quot;bcache&quot;);</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// Create linked list of all buckets</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; NBUCKET; i++) &#123;</span><br><span class="line">    initlock(&amp;bcache.bucketlocks[i], <span class="string">&quot;bcache&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Create linked list of buffers</span></span><br><span class="line">    bcache.heads[i].prev = &amp;bcache.heads[i];</span><br><span class="line">    bcache.heads[i].next = &amp;bcache.heads[i];</span><br><span class="line">    <span class="keyword">for</span>(b = bcache.buckets[i]; b &lt; bcache.buckets[i]+NBUF; b++)&#123;</span><br><span class="line">      b-&gt;next = bcache.heads[i].next;</span><br><span class="line">      b-&gt;prev = &amp;bcache.heads[i];</span><br><span class="line">      initsleeplock(&amp;b-&gt;lock, <span class="string">&quot;buffer&quot;</span>);</span><br><span class="line">      bcache.heads[i].next-&gt;prev = b;</span><br><span class="line">      bcache.heads[i].next = b;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="keyword">struct</span> buf*</span><br><span class="line"><span class="title function_">bget</span><span class="params">(uint dev, uint blockno)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">buf</span> *<span class="title">b</span>;</span></span><br><span class="line">  uint i = blockno % NBUCKET;</span><br><span class="line">  acquire(&amp;bcache.bucketlocks[i]);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Is the block already cached?</span></span><br><span class="line">  <span class="keyword">for</span>(b = bcache.heads[i].next; b != &amp;bcache.heads[i]; b = b-&gt;next)&#123;</span><br><span class="line">    <span class="keyword">if</span>(b-&gt;dev == dev &amp;&amp; b-&gt;blockno == blockno)&#123;</span><br><span class="line">      b-&gt;refcnt++;</span><br><span class="line">      release(&amp;bcache.bucketlocks[i]);</span><br><span class="line">      acquiresleep(&amp;b-&gt;lock);</span><br><span class="line">      <span class="keyword">return</span> b;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Not cached.</span></span><br><span class="line">  <span class="comment">// Recycle the least recently used (LRU) unused buffer.</span></span><br><span class="line">  <span class="keyword">for</span>(b = bcache.heads[i].prev; b != &amp;bcache.heads[i]; b = b-&gt;prev)&#123;</span><br><span class="line">    <span class="keyword">if</span>(b-&gt;refcnt == <span class="number">0</span>) &#123;</span><br><span class="line">      b-&gt;dev = dev;</span><br><span class="line">      b-&gt;blockno = blockno;</span><br><span class="line">      b-&gt;valid = <span class="number">0</span>;</span><br><span class="line">      b-&gt;refcnt = <span class="number">1</span>;</span><br><span class="line">      release(&amp;bcache.bucketlocks[i]);</span><br><span class="line">      acquiresleep(&amp;b-&gt;lock);</span><br><span class="line">      <span class="keyword">return</span> b;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  panic(<span class="string">&quot;bget: no buffers&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">bpin</span><span class="params">(<span class="keyword">struct</span> buf *b)</span> &#123;</span><br><span class="line">  uint i = b-&gt;blockno % NBUCKET;</span><br><span class="line">  acquire(&amp;bcache.bucketlocks[i]);</span><br><span class="line">  b-&gt;refcnt++;</span><br><span class="line">  release(&amp;bcache.bucketlocks[i]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">bunpin</span><span class="params">(<span class="keyword">struct</span> buf *b)</span> &#123;</span><br><span class="line">  uint i = b-&gt;blockno % NBUCKET;</span><br><span class="line">  acquire(&amp;bcache.bucketlocks[i]);</span><br><span class="line">  b-&gt;refcnt--;</span><br><span class="line">  release(&amp;bcache.bucketlocks[i]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/OS/" rel="tag"># OS</a>
+              <a href="/tags/MIT-6-S081/" rel="tag"># MIT 6.S081</a>
+              <a href="/tags/labs/" rel="tag"># labs</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/14/MIT-6-S081-lab-thread/" rel="prev" title="MIT 6.S081 lab thread">
+      <i class="fa fa-chevron-left"></i> MIT 6.S081 lab thread
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#memory-allocator"><span class="nav-number">2.</span> <span class="nav-text">Memory allocator</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#buffer-cache"><span class="nav-number">3.</span> <span class="nav-text">Buffer cache</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">tianyang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tianyang</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
